@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- flow-rebuild template (Growth Audit, v3: + walkthrough video, phone view/QR, localization, paywall today vs proposed). Replace every double-brace placeholder, everything between
+     the SCREENS markers, and the CONTENT json. Rules that brand-check.py enforces are marked RULE.
+     Reference builds: eddieatadapty.github.io/datacamp-flow-rebuild-v2 · bterzic123.github.io/planner5d-flow-rebuild-v2 -->
+<title>Petlibro Growth Audit</title>
+<meta name="description" content="Five ideas to turn more Petlibro users into subscribers, each built into a clickable version of Petlibro's own onboarding. Prepared by Adapty.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- the APP's font (brand.json fonts, or the closest Google family) + a mono if the app shows code -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* BRAND:START — the only place the APP's colours are written as literals. RULE: every value here is
+   copied from brand.json / a sampled pixel of the app's own screens; never "improved". Used only inside the phone. */
+:root{
+  --b-primary:#2b2b2b;      /* Feed Now button (App Store shot 7) */
+  --b-primary-ink:#ffffff;
+  --b-bg:#edede7;           /* app ground (shots 4-7) */
+  --b-surface:#ffffff;      /* cards */
+  --b-ink:#2b2b2b;
+  --b-ink2:#787878;
+  --b-line:#f4f4f4;         /* day chips, fields (shot 5) */
+  --b-accent2:#dabfa4;
+  --b-tan:#dcc8b8;          /* selected day chip (shot 5) */
+  --b-brown:#966e59;        /* water-intake chart (shot 4) */
+  --b-gold:#b89860;         /* highlighted row border (shots 5-6) */
+  --b-sand:#f6f1ed;         /* "Open Now" fill (shot 6) */
+  --b-green:#315800;        /* brand green (site, shot 2) */
+  --b-grad:linear-gradient(180deg,#f6f1ed 0%,#edede7 55%);
+  --b-radius:16px;
+  --b-pill:6px;
+  --b-font:'Inter',-apple-system,system-ui,sans-serif;
+  --b-mono:ui-monospace,monospace;
+}
+/* BRAND:END */
+/* A second app family (e.g. a mono for code) is applied HERE, never in SCREENS css (brand-check allows only
+   var(--b-font) there). Prefix with .scr so it beats the screens' font shorthands, e.g.:
+   .scr .code,.scr .instr code{font-family:var(--b-mono)} */
+
+/* ================= the audit page — Adapty's, not the app's. Light, Apple-style. ================= */
+:root{
+  color-scheme:light;
+  --st-ground:#f5f5f7; --st-card:#ffffff; --st-ink:#1d1d1f; --st-ink2:#6e6e73; --st-ink3:#86868b;
+  --st-hair:rgba(0,0,0,.09); --st-link:#0066cc;
+  --st-accent:#315800;      /* dark brand colour of the APP: buttons, the outcome band */
+  --st-hi:#dec492;          /* bright brand colour of the APP: outcome numbers on the band, idea dots */
+  --st-mark:rgba(222,196,146,.55); /* --st-hi at ~.5 alpha: the highlighter under impact numbers */
+  --st-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+html,body{margin:0}
+body{background:var(--st-ground);color:var(--st-ink);font-family:var(--st-font);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.47}
+.au-wrap{max-width:1080px;margin:0 auto;padding-inline:22px}
+a{color:var(--st-link)}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--st-link);outline-offset:3px;border-radius:6px}
+mark{background:linear-gradient(transparent 62%,var(--st-mark) 62%,var(--st-mark) 92%,transparent 92%);color:inherit;padding:0 .04em}
+
+/* nav */
+.au-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(245,245,247,.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--st-hair)}
+.au-nav-in{max-width:1080px;margin:0 auto;padding-inline:22px;height:52px;display:flex;align-items:center;gap:26px}
+.au-brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.au-brand img{width:26px;height:26px;border-radius:7px;flex:none}
+.au-brand span{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.au-brand small{font-size:15px;font-weight:400;color:var(--st-ink2)}
+.au-nav a{font-size:13px;color:var(--st-ink);text-decoration:none;opacity:.82}
+.au-nav a:hover{opacity:1}
+@media (max-width:560px){.au-nav a.au-opt{display:none}.au-brand small{display:none}}
+
+/* hero */
+.au-top-hero{text-align:center;padding-top:clamp(56px,9vw,96px);overflow:hidden;position:relative}
+.au-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--st-ink);margin:0 0 14px}
+.au-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-display{font-size:clamp(60px,12vw,120px);line-height:.98;font-weight:700;letter-spacing:-.05em;margin:0}
+.au-lede{font-size:clamp(23px,3.4vw,34px);line-height:1.16;font-weight:600;letter-spacing:-.022em;max-width:760px;margin:22px auto 0;text-wrap:balance}
+.au-lede span{color:var(--st-ink2)}
+.au-byline{font-size:14px;color:var(--st-ink3);margin:18px 0 0}
+.au-ctas{display:flex;gap:26px;justify-content:center;align-items:center;margin-top:30px;flex-wrap:wrap}
+.au-btn{display:inline-block;background:var(--st-accent);color:#fff;border-radius:980px;padding:12px 23px;font-size:17px;font-weight:500;text-decoration:none;border:0;cursor:pointer}
+.au-btn:hover{filter:brightness(1.25)}
+.au-lnk{background:none;border:0;padding:0;color:var(--st-link);font-size:17px;text-decoration:none;cursor:pointer}
+.au-lnk::after{content:"\00a0›"}
+.au-lnk:hover{text-decoration:underline}
+.au-phones{display:flex;justify-content:center;align-items:flex-start;margin-top:clamp(40px,6vw,64px);height:clamp(300px,52vw,560px)}
+.au-hp{flex:none;border:0;padding:0;background:none;cursor:pointer;width:27%;max-width:290px;margin:0 -2.5%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.au-hp img{display:block;width:100%;height:auto;filter:drop-shadow(0 28px 50px rgba(0,0,0,.2))}
+.au-hp.au-c{width:31%;max-width:330px;z-index:2}
+.au-hp.au-l{transform:translateY(12%) rotate(-5deg)}
+.au-hp.au-r{transform:translateY(12%) rotate(5deg)}
+.au-hp.au-l:hover{transform:translateY(9%) rotate(-5deg)}.au-hp.au-r:hover{transform:translateY(9%) rotate(5deg)}.au-hp.au-c:hover{transform:translateY(-3%)}
+
+/* sections */
+.au-sec{padding-block:clamp(72px,10vw,120px)}
+.au-sec.au-white{background:var(--st-card)}
+.au-kicker{font-size:15px;font-weight:600;color:var(--st-ink2);margin:0 0 12px}
+.au-h2{font-size:clamp(34px,5.2vw,56px);line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.au-h2 span{color:var(--st-ink3)}
+.au-split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,6vw,80px);align-items:end}
+.au-split p{margin:0;font-size:clamp(17px,1.7vw,21px);line-height:1.45;color:var(--st-ink2);letter-spacing:-.01em}
+.au-split p b{color:var(--st-ink);font-weight:600}
+.au-split p + p{margin-top:16px}
+.au-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(48px,7vw,80px);border-top:1px solid var(--st-hair)}
+.au-stat{padding:28px 20px 0 0}
+.au-stat b{display:block;font-size:clamp(40px,5.5vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.au-stat span{display:block;font-size:15px;color:var(--st-ink2);margin-top:10px;max-width:22ch}
+.au-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px);margin-top:clamp(48px,7vw,72px)}
+.au-note h3{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0 0 8px}
+.au-note p{margin:0;font-size:15.5px;line-height:1.5;color:var(--st-ink2)}
+.au-note .au-ic{width:36px;height:36px;border-radius:10px;background:var(--st-ground);display:grid;place-items:center;margin-bottom:16px}
+.au-note .au-ic svg{width:19px;height:19px;stroke:var(--st-accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ideas */
+.au-ideas-h{margin-bottom:clamp(32px,5vw,48px)}
+.au-list{background:var(--st-card);border-radius:28px;padding-inline:clamp(20px,4vw,44px)}
+.au-idea{display:grid;grid-template-columns:56px 1fr 220px;gap:20px;align-items:start;padding-block:clamp(26px,3.5vw,36px);border-top:1px solid var(--st-hair)}
+.au-idea:first-child{border-top:0}
+.au-idea .au-num{font-size:15px;font-weight:600;color:var(--st-ink3);font-variant-numeric:tabular-nums;padding-top:6px}
+.au-idea h3{font-size:clamp(21px,2.4vw,26px);line-height:1.2;font-weight:600;letter-spacing:-.022em;margin:0 0 8px}
+.au-idea p{margin:0 0 12px;font-size:17px;line-height:1.5;color:var(--st-ink2);max-width:58ch}
+.au-idea p code{font:600 15px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--st-ink);background:var(--st-ground);padding:2px 7px;border-radius:6px}
+.au-idea .au-lnk{font-size:15px}
+.au-imp{text-align:right}
+.au-imp .au-v{font-size:clamp(30px,3.6vw,40px);font-weight:700;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums;color:var(--st-accent)}
+.au-imp .au-l{font-size:13.5px;color:var(--st-ink2);margin-top:8px}
+.au-band{margin-top:20px;background:var(--st-accent);color:#fff;border-radius:28px;padding:clamp(32px,5vw,56px);display:grid;grid-template-columns:1fr auto;gap:clamp(28px,5vw,64px);align-items:center}
+.au-band .au-k{font-size:15px;font-weight:600;color:rgba(255,255,255,.62);margin:0 0 10px}
+.au-band h3{font-size:clamp(24px,3vw,32px);line-height:1.18;font-weight:600;letter-spacing:-.022em;margin:0;text-wrap:balance}
+.au-band .au-fn{font-size:13px;line-height:1.5;color:rgba(255,255,255,.55);margin:16px 0 0;max-width:52ch}
+.au-nums{display:flex;gap:clamp(28px,4vw,48px)}
+.au-nums small{display:block;font-size:13px;color:rgba(255,255,255,.62)}
+.au-nums b{display:block;font-size:clamp(48px,6.5vw,76px);font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-hi);font-variant-numeric:tabular-nums;margin:4px 0 8px}
+.au-nums span{font-size:14px;color:rgba(255,255,255,.8)}
+.au-band .au-btn{background:var(--st-hi);color:var(--st-accent);font-weight:600;margin-top:26px}
+
+/* prototype */
+.au-proto-h{text-align:center;max-width:720px;margin:0 auto}
+.au-proto-h p{font-size:clamp(17px,1.7vw,21px);color:var(--st-ink2);margin:14px 0 0}
+.au-seg{display:flex;gap:4px;justify-content:center;margin:clamp(28px,4vw,40px) auto 0;padding:4px;background:var(--st-ground);border-radius:980px;width:max-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.au-seg::-webkit-scrollbar{display:none}
+.au-chip{flex:none;display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--st-ink2);font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:980px;cursor:pointer;white-space:nowrap}
+.au-chip:hover{color:var(--st-ink)}
+.au-chip.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.au-chip i{font-style:normal;font-size:11px;font-weight:700;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--st-hi);color:var(--st-accent)}
+.au-stage{display:grid;grid-template-columns:auto minmax(0,420px);gap:clamp(32px,6vw,72px);justify-content:center;align-items:center;margin-top:clamp(28px,4vw,44px)}
+.phone{width:390px;height:844px;border-radius:56px;padding:10px;background:#0b0d10;box-shadow:0 0 0 1.5px #3a3d42,0 40px 90px rgba(0,0,0,.25);max-width:calc(100vw - 44px)}
+.phone-in{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:var(--b-bg)}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#000;z-index:9}
+.sbar{position:absolute;top:0;left:0;right:0;height:52px;display:flex;justify-content:space-between;align-items:center;padding:4px 32px 0;font:600 15px -apple-system,system-ui,sans-serif;color:var(--b-ink);z-index:8;pointer-events:none}
+.au-pn{background:var(--st-ground);border-radius:28px;padding:clamp(26px,3.5vw,38px)}
+.au-pn-k{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--st-ink)}
+.au-pn-k i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-pn-k.au-ctx{color:var(--st-ink2)}.au-pn-k.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-pn-t{font-size:clamp(24px,2.6vw,30px);line-height:1.12;font-weight:700;letter-spacing:-.028em;margin:10px 0 14px;text-wrap:balance}
+.au-pn-h{margin:0;font-size:17px;line-height:1.55;color:var(--st-ink2)}
+.au-pn-h b{color:var(--st-ink);font-weight:600}
+.au-pn-o{margin-top:24px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-pn-o .au-lab{font-size:13px;font-weight:600;color:var(--st-ink3)}
+.au-pn-o .au-val{font-size:clamp(38px,4.4vw,50px);font-weight:700;letter-spacing:-.04em;line-height:1.05;color:var(--st-accent);margin-top:6px;font-variant-numeric:tabular-nums}
+.au-pn-o .au-sub{font-size:14px;color:var(--st-ink2);margin-top:4px}
+.au-pn-a{margin:18px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-pn-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px;padding-top:18px;border-top:1px solid var(--st-hair);font-size:13px;color:var(--st-ink3)}
+.au-pn-nav button{background:var(--st-card);border:0;border-radius:980px;padding:8px 15px;font-size:14px;font-weight:500;color:var(--st-ink);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.au-pn-nav button:disabled{opacity:.35;cursor:default}
+.au-hint{text-align:center;font-size:14px;color:var(--st-ink3);margin:22px 0 0}
+
+/* footer */
+.au-foot{padding-block:56px 72px;border-top:1px solid var(--st-hair)}
+.au-foot details{border-bottom:1px solid var(--st-hair);padding-bottom:18px}
+.au-foot summary{cursor:pointer;font-size:17px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.au-foot summary::-webkit-details-marker{display:none}
+.au-foot summary::after{content:"+";font-size:24px;font-weight:300;color:var(--st-ink2)}
+.au-foot details[open] summary::after{content:"−"}
+.au-srcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 48px;margin-top:18px}
+.au-srcs h4{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--st-ink3);margin:18px 0 6px}
+.au-srcs dl{margin:0}.au-srcs dt{font-size:14.5px;font-weight:600;margin-top:10px}
+.au-srcs dd{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-fine{font-size:12.5px;line-height:1.6;color:var(--st-ink3);margin:22px 0 0;max-width:80ch}
+.au-cta-line{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:36px}
+.au-cta-line p{margin:0;font-size:clamp(19px,2.2vw,24px);font-weight:600;letter-spacing:-.02em;max-width:34ch}
+
+@media (max-width:900px){
+  .au-split,.au-band{grid-template-columns:1fr}
+  .au-notes{grid-template-columns:1fr}
+  .au-idea{grid-template-columns:40px 1fr}
+  .au-imp{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:10px}
+  .au-imp .au-l{margin:0}
+  .au-imp .au-v{white-space:nowrap}
+  .au-stage{grid-template-columns:1fr;justify-items:center}
+  .au-pn{width:100%;max-width:520px}
+  .au-srcs{grid-template-columns:1fr}
+}
+@media (max-width:560px){.au-stats{grid-template-columns:1fr}.au-stat{padding:22px 0 0}.au-nums{flex-direction:column;gap:18px}}
+
+/* ================= extras (audit side): video, language, phone view + QR, paywall today vs proposed, ?tour ================= */
+[hidden]{display:none!important}
+/* the device never scrolls: off-screen slides would otherwise make it scrollable by focus / scrollIntoView */
+.phone-in,.scr{overflow:clip}
+/* hero: walkthrough link */
+.au-play::before{content:"▶";font-size:.72em;margin-right:7px;position:relative;top:-1px}
+/* video dialog */
+.au-vid{border:0;padding:0;background:transparent;max-width:min(1120px,94vw);width:100%;overflow:visible}
+.au-vid::backdrop{background:rgba(0,0,0,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.au-vid-in{background:#000;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.au-vid video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.au-vid-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 4px 0;font-size:14px}
+.au-vid-bar a{color:#fff;opacity:.85}
+.au-vid-x{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:980px;padding:8px 16px;font-size:14px;cursor:pointer}
+/* language switch */
+.au-langrow{display:flex;justify-content:center;align-items:center;gap:12px;margin:18px 0 0;font-size:13.5px;color:var(--st-ink2);flex-wrap:wrap}
+.au-lsw{display:inline-flex;gap:2px;padding:3px;background:var(--st-ground);border-radius:980px}
+.au-lsw button{border:0;background:none;padding:6px 13px;border-radius:980px;font-size:13.5px;font-weight:500;color:var(--st-ink2);cursor:pointer;white-space:nowrap}
+.au-lsw button.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+/* QR card (desktop) / full-screen button (phone) */
+.au-qr{display:flex;align-items:center;gap:18px;margin:26px auto 0;max-width:500px;background:var(--st-ground);border-radius:22px;padding:14px 22px 14px 14px}
+.au-qr img{width:112px;height:112px;border-radius:12px;image-rendering:pixelated;flex:none;background:#fff}
+.au-qr b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.au-qr p{margin:4px 0 0;font-size:14.5px;line-height:1.45;color:var(--st-ink2)}
+.au-mobw{display:none;text-align:center;margin-top:22px}
+@media (max-width:900px){.au-qr{display:none}.au-mobw{display:block}}
+/* paywall: today vs proposed */
+.au-cmp{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr) minmax(0,290px);gap:clamp(24px,4vw,52px);align-items:center;margin-top:clamp(32px,5vw,52px)}
+.au-cmp figure{margin:0;text-align:center}
+.au-cmp figure img{display:block;width:100%;height:auto;filter:drop-shadow(0 24px 44px rgba(0,0,0,.18))}
+.au-cmp figcaption{margin-top:14px;font-size:15px;font-weight:600}
+.au-cmp figcaption span{color:var(--st-ink2);font-weight:400}
+.au-cmp-go{border:0;padding:0;background:none;cursor:pointer;display:block;width:100%;transition:transform .3s}
+.au-cmp-go:hover{transform:translateY(-4px)}
+.au-chg{list-style:none;margin:0;background:var(--st-card);border-radius:24px;padding:4px clamp(18px,2.4vw,28px)}
+.au-chg li{padding:15px 0;border-top:1px solid var(--st-hair)}
+.au-chg li:first-child{border-top:0}
+.au-chg h4{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.au-chg h4 i{font-style:normal;font-size:12px;font-weight:600;color:var(--st-accent);background:var(--st-mark);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.au-was,.au-now{display:grid;grid-template-columns:78px 1fr;gap:8px;font-size:14.5px;line-height:1.42}
+.au-was{color:var(--st-ink3)}
+.au-now{color:var(--st-ink);margin-top:3px}
+.au-was em,.au-now em{font-style:normal;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.au-now em{color:var(--st-link)}
+.au-kept{margin:22px 0 0;font-size:14px;color:var(--st-ink2);text-align:center}
+@media (max-width:900px){.au-cmp{grid-template-columns:1fr 1fr;gap:18px}.au-chg{grid-column:1 / -1;order:3}.au-was,.au-now{grid-template-columns:70px 1fr}}
+
+/* ?app — the prototype full screen on a real phone, with a bar that opens the idea panel */
+html.appmode,html.appmode body{height:100%;overflow:hidden;background:#000}
+html.appmode .au-nav,html.appmode .au-top-hero,html.appmode #why,html.appmode #ideas,html.appmode #compare,html.appmode .au-foot,
+html.appmode .au-proto-h,html.appmode #prototype .au-langrow,html.appmode #chips,html.appmode .au-hint,html.appmode .au-qr,html.appmode .au-mobw{display:none!important}
+html.appmode #prototype{padding:0;background:#000}
+html.appmode #prototype .au-wrap{padding:0;max-width:none}
+html.appmode .au-stage{display:block;margin:0}
+html.appmode .phone{position:fixed;top:0;left:0;right:0;margin:0 auto;width:min(100%,480px);height:calc(100% - 56px - env(safe-area-inset-bottom,0px));max-width:none;border-radius:0;padding:0;box-shadow:none;background:#000}
+html.appmode .phone-in{border-radius:0}
+html.appmode .island,html.appmode .sbar{display:none}
+html.appmode .scr .s-pad{padding-top:max(58px,calc(env(safe-area-inset-top,0px) + 16px))}
+html.appmode .scr .s-x,html.appmode .scr .s-lang{top:max(54px,calc(env(safe-area-inset-top,0px) + 10px))}
+.au-appbar,.au-scrim{display:none}
+html.appmode .au-appbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(56px + env(safe-area-inset-bottom,0px));padding:0 12px env(safe-area-inset-bottom,0px) 16px;align-items:center;gap:12px;background:#0b0b0c;border-top:1px solid rgba(255,255,255,.1);color:#fff}
+.au-ab-why{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:none;border:0;color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;padding:0}
+.au-ab-why i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);flex:none}
+.au-ab-why span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.au-ab-why em{font-style:normal;color:rgba(255,255,255,.6);margin-left:auto;flex:none;font-size:13px}
+.au-appbar .au-lsw{background:rgba(255,255,255,.12)}
+.au-appbar .au-lsw button{color:rgba(255,255,255,.75);padding:5px 11px}
+.au-appbar .au-lsw button.on{background:#fff;color:#000}
+html.appmode #panel{position:fixed;left:0;right:0;bottom:0;z-index:80;max-width:none;width:auto;margin:0 auto;border-radius:24px 24px 0 0;max-height:78%;overflow:auto;transform:translateY(105%);transition:transform .3s cubic-bezier(.3,.7,.2,1);padding-bottom:calc(26px + env(safe-area-inset-bottom,0px))}
+html.appmode.au-open #panel{transform:none}
+html.appmode.au-open .au-scrim{display:block;position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.5)}
+
+/* ?tour — 1280×720 walkthrough frames (record-video.sh renders them into assets/walkthrough.mp4) */
+.au-tour{display:none}
+html.tourmode,html.tourmode body{overflow:hidden;background:var(--st-ground)}
+html.tourmode body *{visibility:hidden}
+html.tourmode .phone,html.tourmode .phone *,html.tourmode .au-tour,html.tourmode .au-tour *{visibility:visible}
+html.tourmode .phone{position:fixed;left:170px;top:44px;margin:0;transform:scale(.755);transform-origin:0 0;box-shadow:0 0 0 1.5px #3a3d42,0 34px 80px rgba(0,0,0,.22);z-index:5;max-width:none}
+html.tourmode .au-tour{display:block;position:fixed;inset:0;z-index:6;pointer-events:none;color:var(--st-ink)}
+.au-tb{position:absolute;left:590px;top:30px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
+.au-tb img{width:26px;height:26px;border-radius:7px}
+.au-tb small{font-size:16px;font-weight:400;color:var(--st-ink2)}
+.au-tby{position:absolute;right:48px;top:32px;font-size:14px;color:var(--st-ink3)}
+.au-tcap{position:absolute;left:590px;right:60px;top:50%;transform:translateY(-50%)}
+.au-tk{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:600}
+.au-tk i{width:9px;height:9px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-tk.au-ctx{color:var(--st-ink2)}.au-tk.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-tt{font-size:46px;line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:14px 0 14px;text-wrap:balance}
+.au-tl{font-size:23px;line-height:1.36;color:var(--st-ink2);letter-spacing:-.01em;margin:0;max-width:28ch}
+.au-to{margin-top:28px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-to small{display:block;font-size:14px;font-weight:600;color:var(--st-ink3)}
+.au-to b{display:inline-block;font-size:62px;font-weight:700;letter-spacing:-.045em;line-height:1.08;color:var(--st-accent);margin-top:4px}
+.au-to span{display:block;font-size:16px;color:var(--st-ink2);margin-top:2px}
+.au-tprog{position:absolute;left:48px;right:48px;bottom:22px;height:4px;border-radius:3px;background:var(--st-hair);overflow:hidden}
+.au-tprog i{display:block;height:100%;background:var(--st-hi)}
+.au-ttap{position:absolute;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,.5);box-shadow:0 0 0 2.5px rgba(255,255,255,.9),0 6px 16px rgba(0,0,0,.35);opacity:0}
+.au-tintro,.au-tend{position:absolute;inset:0;background:var(--st-ground);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0}
+.au-tintro .au-lede{margin-top:18px}
+.au-te-h{font-size:46px;line-height:1.08;font-weight:700;letter-spacing:-.035em;margin:0;max-width:18ch;text-wrap:balance}
+.au-te-n{display:flex;gap:64px;margin-top:30px}
+.au-te-n small{display:block;font-size:14px;color:var(--st-ink2)}
+.au-te-n b{display:block;font-size:76px;font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-accent);margin:4px 0 6px}
+.au-te-n span{font-size:15px;color:var(--st-ink2)}
+.au-te-q{display:flex;align-items:center;gap:18px;margin-top:34px;background:var(--st-card);border-radius:20px;padding:12px 24px 12px 12px;text-align:left}
+.au-te-q img{width:104px;height:104px;border-radius:10px;image-rendering:pixelated}
+.au-te-q b{display:block;font-size:18px;font-weight:600}
+.au-te-q span{display:block;font-size:15px;color:var(--st-link);margin-top:3px}
+.au-te-f{position:absolute;bottom:44px;left:0;right:0;font-size:13px;color:var(--st-ink3);margin:0}
+
+/* ---------- screen engine (layout only, no colours) ---------- */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--b-bg);color:var(--b-ink);font-family:var(--b-font);
+     transform:translateX(100%);transition:transform .32s cubic-bezier(.3,.7,.2,1);overflow:hidden;text-align:left;line-height:normal;font-size:16px}
+.scr.is-active{transform:none;z-index:2}.scr.is-past{transform:translateX(-28%)}.scr.under{transform:none;z-index:1}
+.scr.sheet{transform:translateY(100%)}.scr.sheet.is-active{transform:none}
+.nofx,.nofx *{transition:none!important}
+.shot .scr{transition:none!important}
+/* ?phone — just the device at (10,10), for shoot.sh and hero-stills.sh (&clear = transparent ground) */
+.phoneonly body{background:#141615}
+.phoneonly.clear body{background:transparent}
+.phoneonly body *{visibility:hidden}
+.phoneonly .phone,.phoneonly .phone *{visibility:visible}
+.phoneonly .phone{position:fixed;top:10px;left:10px;z-index:99;box-shadow:none;max-width:none;margin:0}
+
+/* SCREENS:START — Petlibro's in-app look: warm grey ground, white cards, uppercase section titles,
+   tan selection, near-black square-ish action button. Colours only via var(--b-*). */
+.s-pad{flex:1;display:flex;flex-direction:column;padding:58px 18px 26px;gap:12px;position:relative;z-index:1;min-height:0}
+.p-nav{display:flex;align-items:center;justify-content:center;position:relative;height:36px;flex:none}
+.p-nav b{font:600 17px var(--b-font);color:var(--b-ink);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:250px}
+.p-bk{position:absolute;left:0;top:2px;background:none;border:0;padding:4px 8px 4px 2px;cursor:pointer;color:var(--b-ink)}
+.p-bk svg,.p-ic svg{display:block}
+.p-ttl{font:700 13px var(--b-font);letter-spacing:.04em;text-transform:uppercase;color:var(--b-ink);margin:6px 2px -2px}
+.p-lead{font:500 15px/1.4 var(--b-font);color:var(--b-ink2);margin:0 2px}
+.p-lead b{color:var(--b-ink);font-weight:600}
+.p-big{font:700 24px/1.18 var(--b-font);color:var(--b-ink);margin:2px 2px 0;letter-spacing:-.02em}
+.p-card{background:var(--b-surface);border-radius:var(--b-radius);padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.p-go{margin-top:auto;width:100%;border:0;border-radius:var(--b-pill);background:var(--b-primary);color:var(--b-primary-ink);font:600 14px var(--b-font);letter-spacing:.06em;text-transform:uppercase;padding:16px 12px;cursor:pointer;flex:none}
+.p-ghost{background:none;border:0;font:500 14px var(--b-font);color:var(--b-ink2);padding:6px;cursor:pointer;flex:none}
+
+/* add device */
+.p-dev{display:flex;align-items:center;gap:14px;width:100%;background:var(--b-surface);border:1.5px solid transparent;border-radius:var(--b-radius);padding:10px 14px 10px 10px;cursor:pointer;text-align:left;font-family:var(--b-font)}
+.p-dev.on{border-color:var(--b-gold)}
+.p-dev img{width:64px;height:64px;object-fit:contain;flex:none;border-radius:12px;background:var(--b-surface)}
+.p-dev b{display:block;font:600 16px var(--b-font);color:var(--b-ink)}
+.p-dev small{display:block;font:400 13px var(--b-font);color:var(--b-ink2);margin-top:3px}
+.p-dev i{margin-left:auto;font-style:normal;color:var(--b-ink2);font-size:20px}
+.p-tip{display:flex;gap:10px;align-items:center;background:var(--b-sand);border-radius:12px;padding:12px 14px;font:500 13px/1.4 var(--b-font);color:var(--b-brown)}
+
+/* pet profile */
+.p-ava{width:86px;height:86px;border-radius:24px;overflow:hidden;margin:4px auto 0;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.p-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.p-form{padding:2px 16px}
+.p-fr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-top:1px solid var(--b-line)}
+.p-fr:first-child{border-top:0}
+.p-fr > span{font:500 15px var(--b-font);color:var(--b-ink)}
+.p-in{border:0;background:var(--b-line);border-radius:8px;padding:9px 12px;font:600 15px var(--b-font);color:var(--b-ink);width:150px;text-align:right;outline:none}
+.p-segs{display:flex;gap:6px}
+.p-sg{border:0;background:var(--b-line);color:var(--b-ink);border-radius:6px;padding:9px 13px;font:500 14px var(--b-font);cursor:pointer;min-width:44px}
+.p-sg.on{background:var(--b-tan);color:var(--b-primary-ink)}
+.p-note{font:400 13px/1.45 var(--b-font);color:var(--b-ink2);margin:0 4px}
+
+/* pet header card (their Meal Data card) */
+.p-pet{display:flex;align-items:center;gap:18px;padding:16px}
+.p-pet .p-ava{width:64px;height:64px;border-radius:18px;margin:0}
+.p-pet .p-pn{font:500 15px var(--b-font);color:var(--b-ink);text-align:center;margin-top:6px}
+.p-kv{display:grid;gap:8px;flex:1}
+.p-kv small{display:block;font:400 12.5px var(--b-font);color:var(--b-ink2)}
+.p-kv b{display:block;font:700 21px var(--b-font);color:var(--b-ink);letter-spacing:-.01em}
+.p-md{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--b-line);margin:0 -16px -16px;padding:14px 16px;font:500 14.5px var(--b-font);color:var(--b-ink)}
+
+/* feeding amount card (their Feed Now control) */
+.p-amt{display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 18px 18px}
+.p-amt img{width:150px;height:auto;display:block}
+.p-amt .p-q{font:700 15px var(--b-font);color:var(--b-ink)}
+.p-sl{display:flex;align-items:center;gap:12px;width:100%}
+.p-pm{width:30px;height:30px;border-radius:50%;border:0;background:var(--b-line);color:var(--b-ink2);font:400 20px/1 var(--b-font);cursor:pointer;flex:none}
+.p-tr{flex:1;height:6px;border-radius:4px;background:var(--b-line);position:relative}
+.p-tr i{position:absolute;left:0;top:0;bottom:0;width:42%;background:var(--b-tan);border-radius:4px}
+.p-tr u{position:absolute;left:42%;top:50%;width:14px;height:22px;margin:-11px 0 0 -7px;background:var(--b-surface);border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.p-feednow{width:100%;border:0;border-radius:var(--b-pill);background:var(--b-primary);color:var(--b-primary-ink);font:600 13px var(--b-font);letter-spacing:.06em;text-transform:uppercase;padding:15px;cursor:pointer;margin-top:4px}
+.p-ring{width:132px;height:132px;border-radius:50%;background:conic-gradient(var(--b-brown) 0 40%,var(--b-line) 40% 100%);display:grid;place-items:center}
+.p-ring > div{width:112px;height:112px;border-radius:50%;background:var(--b-surface);display:grid;place-items:center;text-align:center}
+.p-ring b{font:700 26px var(--b-font);color:var(--b-ink)}.p-ring small{display:block;font:400 12px var(--b-font);color:var(--b-ink2)}
+
+/* the log after the first feed */
+.p-ntf{display:flex;gap:11px;align-items:center;background:var(--b-surface);border-radius:14px;padding:11px 13px;box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.p-ntf img{width:34px;height:34px;border-radius:8px;flex:none}
+.p-ntf b{font:600 13.5px var(--b-font);color:var(--b-ink)}
+.p-ntf div > span{display:block;font:400 13px/1.35 var(--b-font);color:var(--b-ink)}
+.p-ntf em{margin-left:auto;align-self:flex-start;font-style:normal;font:400 12px var(--b-font);color:var(--b-ink2)}
+.p-ev{display:flex;gap:12px;align-items:center;padding:14px 16px}
+.p-evi{width:36px;height:36px;border-radius:50%;background:var(--b-tan);color:var(--b-primary-ink);display:grid;place-items:center;flex:none}
+.p-ev small{display:block;font:400 12.5px var(--b-font);color:var(--b-ink2)}
+.p-ev b{display:block;font:700 16px var(--b-font);color:var(--b-ink);margin-top:2px}
+.p-ev em{margin-left:auto;font-style:normal;font:500 13px var(--b-font);color:var(--b-ink2)}
+.p-lock{position:relative;overflow:hidden;padding:16px 16px 14px;border:1.5px solid var(--b-gold)}
+.p-lock h3{margin:0;font:700 16px/1.3 var(--b-font);color:var(--b-ink);padding-right:96px}
+.p-tag{position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:5px;background:var(--b-sand);color:var(--b-brown);font:600 11.5px var(--b-font);padding:5px 9px;border-radius:999px}
+.p-bars{display:flex;align-items:flex-end;gap:7px;height:74px;margin:14px 0 10px;filter:blur(3px);opacity:.8}
+.p-bars i{flex:1;background:var(--b-brown);border-radius:3px 3px 0 0;opacity:.75}
+.p-bars i.p-band{background:var(--b-tan)}
+.p-lock p{margin:0;font:400 13.5px/1.42 var(--b-font);color:var(--b-ink2)}
+.p-lock p b{color:var(--b-ink);font-weight:600}
+
+/* plan recommendation */
+.p-rec{background:var(--b-grad)}
+.p-shield{width:118px;height:auto;margin:2px auto 0;display:block}
+.p-camimg{width:100%;height:150px;object-fit:cover;border-radius:var(--b-radius);display:block}
+.p-kick{font:600 12px var(--b-font);letter-spacing:.08em;text-transform:uppercase;color:var(--b-gold);text-align:center;margin:6px 0 0}
+.p-pname{font:700 25px/1.15 var(--b-font);color:var(--b-ink);text-align:center;margin:0;letter-spacing:-.02em}
+.p-why{font:400 14.5px/1.45 var(--b-font);color:var(--b-ink2);text-align:center;margin:0 10px}
+.p-why b{color:var(--b-ink);font-weight:600}
+.p-feat{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--b-line)}
+.p-feat:first-child{border-top:0;padding-top:2px}
+.p-feat:last-child{padding-bottom:0}
+.p-feat .p-ic{width:30px;height:30px;border-radius:9px;background:var(--b-sand);display:grid;place-items:center;flex:none;color:var(--b-brown)}
+.p-feat b{display:block;font:600 14.5px var(--b-font);color:var(--b-ink)}
+.p-feat span{display:block;font:400 13px/1.4 var(--b-font);color:var(--b-ink2);margin-top:2px}
+.p-alt{font:500 13.5px var(--b-font);color:var(--b-ink2);text-align:center;text-decoration:underline;text-underline-offset:3px;flex:none}
+
+/* paywall */
+.p-hero{position:absolute;left:0;right:0;top:0;height:268px;z-index:0}
+.p-hero img{width:100%;height:100%;object-fit:cover;object-position:50% 35%;display:block;-webkit-mask-image:linear-gradient(180deg,#000 48%,rgba(0,0,0,0) 90%);mask-image:linear-gradient(180deg,#000 48%,rgba(0,0,0,0) 90%)}
+.p-hero::after{content:"";position:absolute;left:0;right:0;top:0;height:30%;background:linear-gradient(180deg,rgba(0,0,0,.22),rgba(0,0,0,0))}
+.scr[data-id="paywall"] .s-pad.p-pw{padding-top:204px;gap:11px}
+.p-inc{display:grid;gap:7px;padding:2px 4px}
+.p-inc div{display:flex;align-items:center;gap:9px;font:500 14px var(--b-font);color:var(--b-ink)}
+.p-inc svg{color:var(--b-green);flex:none}
+.scr[data-id="offer"]{background:transparent}
+.s-x,.p-x{position:absolute;top:56px;right:16px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.85);color:var(--b-ink);font:400 17px/1 var(--b-font);cursor:pointer;z-index:3}
+.p-pwtop{display:flex;align-items:center;gap:14px}
+.p-pwtop img{width:58px;height:auto;flex:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.12))}
+.p-pwtop small{display:block;font:600 11.5px var(--b-font);letter-spacing:.08em;text-transform:uppercase;color:var(--b-gold)}
+.p-pwtop h1{margin:3px 0 0;font:700 23px/1.15 var(--b-font);color:var(--b-ink);letter-spacing:-.02em}
+.p-per{display:flex;background:var(--b-line);border-radius:8px;padding:3px;gap:3px}
+.p-per button{flex:1;border:0;background:none;border-radius:6px;padding:9px;font:600 14px var(--b-font);color:var(--b-ink2);cursor:pointer;display:flex;justify-content:center;gap:6px;align-items:center}
+.p-per button.on{background:var(--b-surface);color:var(--b-ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.p-sv{background:var(--b-tan);color:var(--b-primary-ink);font:700 10.5px var(--b-font);padding:2px 6px;border-radius:4px;letter-spacing:.03em}
+.p-price{text-align:center;padding:14px 16px 13px}
+.p-price b{display:block;font:700 34px var(--b-font);color:var(--b-ink);letter-spacing:-.03em;white-space:nowrap}
+.p-price b small{font:500 16px var(--b-font);color:var(--b-ink2);letter-spacing:0}
+.p-price p{margin:6px 0 0;font:500 14.5px var(--b-font);color:var(--b-brown)}
+.p-price p span{white-space:nowrap}
+.p-proof{display:flex;gap:10px}
+.p-proof > div{flex:1;background:var(--b-surface);border-radius:12px;padding:11px 10px;text-align:center}
+.p-proof b{display:block;font:700 16px var(--b-font);color:var(--b-ink);white-space:nowrap}
+.p-proof b i{font-style:normal;color:var(--b-gold)}
+.p-proof span{display:block;font:400 12px/1.3 var(--b-font);color:var(--b-ink2);margin-top:2px}
+.p-safe{display:flex;align-items:center;justify-content:center;gap:7px;font:500 13.5px var(--b-font);color:var(--b-ink);margin-top:-2px;flex:none}
+.p-safe svg{color:var(--b-green);flex:none}
+.p-legal{font:400 11px/1.45 var(--b-font);color:var(--b-ink2);text-align:center;margin:0;flex:none}
+.p-legal u{text-underline-offset:2px}
+
+/* offer on close (sheet) */
+.p-sheet{background:rgba(0,0,0,.38);justify-content:flex-end}
+.p-sh{background:var(--b-bg);border-radius:22px 22px 0 0;padding:10px 18px 28px;display:flex;flex-direction:column;gap:12px;position:relative}
+.p-grab{width:38px;height:5px;border-radius:3px;background:rgba(0,0,0,.15);margin:0 auto 4px}
+.p-sh .p-x{top:14px;right:14px}
+.p-off{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--b-gold)}
+.p-off img{width:48px;height:auto;flex:none}
+.p-off b{display:block;font:700 16px var(--b-font);color:var(--b-ink)}
+.p-off span{display:block;font:400 13px var(--b-font);color:var(--b-ink2);margin-top:2px}
+.p-off strong{margin-left:auto;font:700 18px var(--b-font);color:var(--b-ink);white-space:nowrap;text-align:right}
+.p-off strong small{display:block;font:500 12px var(--b-font);color:var(--b-ink2)}
+.p-ok{display:flex;gap:10px;align-items:flex-start;font:400 13.5px/1.45 var(--b-font);color:var(--b-ink2)}
+.p-ok svg{color:var(--b-green);flex:none;margin-top:2px}
+
+/* the plan list today (reconstructed from the App Store list, aside) */
+.p-tl{padding:4px 16px}
+.p-tl h4{margin:12px 0 4px;font:700 13px var(--b-font);letter-spacing:.04em;text-transform:uppercase;color:var(--b-ink)}
+.p-tr2{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--b-line);font:500 14px var(--b-font);color:var(--b-ink)}
+.p-tr2 span{font:400 13.5px var(--b-font);color:var(--b-ink2);white-space:nowrap}
+
+/* variants: device (fountain vs feeders) and recommended plan, switched from hooks via .phone-in data-* */
+.phone-in[data-dev="fountain"] .if-feed{display:none}
+.phone-in:not([data-dev="fountain"]) .if-water{display:none}
+.phone-in:not([data-plan="care"]) .if-care{display:none}
+.phone-in:not([data-plan="plus"]) .if-plus{display:none}
+.phone-in:not([data-plan="vc"]) .if-vc{display:none}
+.phone-in[data-plan="vc"] .if-carel{display:none}
+/* SCREENS:END */
+</style>
+</head>
+<body>
+
+<nav class="au-nav" aria-label="Sections">
+  <div class="au-nav-in">
+    <div class="au-brand">
+      <img src="assets/brand/appstore-icon.jpg" alt="">
+      <span>Growth Audit <small>· Petlibro</small></span>
+    </div>
+    <a class="au-opt" href="#why">Why this</a>
+    <a href="#ideas">Five ideas</a>
+    <a href="#prototype">Prototype</a>
+    <a class="au-opt" href="#compare" id="navCompare" hidden>Paywall</a>
+  </div>
+</nav>
+
+<header class="au-top-hero" id="top">
+  <div class="au-wrap">
+    <p class="au-eyebrow"><i></i>Growth Audit · October 2026</p>
+    <h1 class="au-display">Petlibro</h1>
+    <p class="au-lede">Five ideas to turn more Petlibro device owners into subscribers. <span>Each one built into your own setup flow, so you can tap through it.</span></p>
+    <p class="au-byline">Prepared by Adapty for the Petlibro team</p>
+    <div class="au-ctas">
+      <a class="au-btn" href="#ideas">See the five ideas</a>
+      <a class="au-lnk" href="#prototype">Open the prototype</a>
+      <button type="button" class="au-lnk au-play" id="heroVideo" hidden>Watch the 30-second walkthrough</button>
+    </div>
+  </div>
+  <!-- filled from CONTENT.hero: three screen ids → assets/hero/<id>.png (make them with hero-stills.sh) -->
+  <div class="au-phones" id="heroPhones" aria-label="Three screens from the prototype"></div>
+</header>
+
+<section class="au-sec au-white" id="why">
+  <div class="au-wrap">
+    <div class="au-split">
+      <div>
+        <p class="au-kicker">Why you’re seeing this</p>
+        <h2 class="au-h2">30,000 subscription apps taught us what moves conversion. <span>Here’s what we’d test first at Petlibro.</span></h2>
+      </div>
+      <div>
+        <p>Adapty runs subscriptions for <b>more than 30,000 apps</b>, so we see which onboarding and paywall changes lift revenue across the whole market, not just inside one app.</p>
+        <p>We pointed that at Petlibro. We took <b>your own screens, copy and prices</b> from your App Store listing and site, and rebuilt the path from device setup to paywall around the five ideas with the most potential.</p>
+      </div>
+    </div>
+    <div class="au-stats">
+      <div class="au-stat"><b>30,000+</b><span>apps run their subscriptions on Adapty</span></div>
+      <div class="au-stat"><b>5</b><span>ideas, each built as a working screen</span></div>
+      <div class="au-stat"><b>0</b><span>changes to your art direction</span></div>
+    </div>
+    <div class="au-notes">
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg></div>
+        <h3>Five ideas, not fifteen</h3>
+        <p>We’re not proposing to rebuild every screen. These are the changes with the highest potential, ranked by what we’d test first.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M3.5 12h17"/></svg></div>
+        <h3>Your design, not ours</h3>
+        <p>Every colour, control and price in the prototype is Petlibro’s. We changed the order and what gets shown.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4H15"/></svg></div>
+        <h3>We hope you haven’t tried these yet</h3>
+        <p>We work from the outside, so we can’t see your live flow or your test history. If you’ve already run one of these, tell us and we’ll go deeper on the rest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec" id="ideas">
+  <div class="au-wrap">
+    <div class="au-ideas-h">
+      <p class="au-kicker">The shortlist</p>
+      <h2 class="au-h2">Five ideas. <span>Ranked by what we’d test first.</span></h2>
+    </div>
+    <div class="au-list" id="ideaList"></div>
+    <div class="au-band">
+      <div>
+        <p class="au-k">Potential outcome, based on Adapty data</p>
+        <h3>Together they work on three moments: what setup asks about the pet, what the first feed shows, and what happens when someone says no to a year.</h3>
+        <p class="au-fn" id="bandFn"></p>
+        <a class="au-btn" href="#prototype">Tap through the prototype</a>
+      </div>
+      <div class="au-nums" id="bandNums"></div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec au-white" id="prototype">
+  <div class="au-wrap">
+    <div class="au-proto-h">
+      <p class="au-kicker">The prototype</p>
+      <h2 class="au-h2">Every idea, inside your own setup flow.</h2>
+      <p>Tap through it like a new user, or jump straight to an idea. Gold numbers mark the screens that carry one.</p>
+    </div>
+    <div class="au-langrow" id="langRow" hidden><span>Prototype language</span><div class="au-lsw" id="langSw" role="group" aria-label="Prototype language"></div></div>
+    <div class="au-seg" id="chips" role="tablist" aria-label="Screens"></div>
+    <div class="au-stage">
+      <div class="phone"><div class="phone-in">
+        <div class="island"></div>
+        <div class="sbar"><span>9:41</span><span>●●● ▮</span></div>
+
+<!-- SCREENS:START — one section.scr[data-id=ID] per screen, in flow order. Only the screens an idea lands on,
+     plus the context needed to read the flow (~8–10). Wiring: data-go="<id>" · data-back · data-pick="key:value"
+     (+ data-advance="<id>") · data-toggle="key:value" · data-bind="key" / "label:key" / "count:key" ·
+     data-requires="key" · data-show="key:value" · data-input="key" · class="scr sheet" slides up (offer paywall).
+     RULE: images only from assets/ (their app, their site, App Store) — never stock, never hotlinked.
+     Extras: data-t="key" = translatable (markup is CONTENT.langs[0]; other languages in CONTENT.i18n) — keep data-t on
+     leaf-ish elements, never on an element that also carries data-bind/data-pick/data-show;
+     data-langtoggle cycles the language (their own language pill); data-aside keeps a screen out of the flow
+     (the paywall TODAY, rendered only for the side-by-side still). -->
+
+<section class="scr" data-id="device">
+  <div class="s-pad">
+    <div class="p-nav"><button class="p-bk" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><b data-t="dev_nav">Add Device</b></div>
+    <p class="p-ttl" data-t="dev_ttl">Choose your device</p>
+    <button class="p-dev" data-pick="device:feeder" data-advance="pet"><img src="assets/crop/dev-feeder.png" alt=""><div><b>Granary Smart Feeder</b><small data-t="dev_feeder">Wi-Fi feeder · PLAF103</small></div><i>›</i></button>
+    <button class="p-dev" data-pick="device:camera" data-advance="pet"><img src="assets/crop/dev-camera.png" alt=""><div><b>Granary Smart Camera Feeder</b><small data-t="dev_camera">Camera feeder · PLAF203</small></div><i>›</i></button>
+    <button class="p-dev" data-pick="device:fountain" data-advance="pet"><img src="assets/crop/dev-fountain.png" alt=""><div><b>Dockstream 2 Smart Fountain</b><small data-t="dev_fountain">Smart fountain</small></div><i>›</i></button>
+    <div class="p-tip" style="margin-top:auto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span data-t="dev_tip">Granary owners: scan the QR code on your device or manual to make sure you’re in the right app.</span></div>
+  </div>
+</section>
+
+<section class="scr" data-id="pet">
+  <div class="s-pad">
+    <div class="p-nav"><button class="p-bk" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><b data-t="pet_nav">Pet Profile</b></div>
+    <div class="p-ava"><img data-show="species:cat" src="assets/crop/pet-cat.png" alt=""><img data-show="species:dog" src="assets/crop/pet-dog.png" alt=""></div>
+    <h1 class="p-big" style="text-align:center"><span data-t="pet_h">Tell us about your pet</span></h1>
+    <div class="p-card p-form">
+      <label class="p-fr"><span data-t="pet_name">Name</span><input class="p-in" data-input="name" aria-label="Pet name"></label>
+      <div class="p-fr"><span data-t="pet_species">Cat or dog</span><div class="p-segs"><button class="p-sg" data-pick="species:cat"><span data-t="pet_cat">Cat</span></button><button class="p-sg" data-pick="species:dog"><span data-t="pet_dog">Dog</span></button></div></div>
+      <div class="p-fr"><span data-t="pet_count">Pets using it</span><div class="p-segs"><button class="p-sg" data-pick="pets:1">1</button><button class="p-sg" data-pick="pets:2">2</button><button class="p-sg" data-pick="pets:3">3+</button></div></div>
+    </div>
+    <p class="p-note" data-t="pet_note">We use this to set portions, name your logs and suggest the one plan that fits.</p>
+    <button class="p-go p-save" data-go="feed"><span data-t="pet_cta">Save</span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="feed">
+  <div class="s-pad">
+    <div class="p-nav"><button class="p-bk" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><b data-bind="label:device"></b></div>
+    <div class="p-card p-pet">
+      <div><div class="p-ava"><img data-show="species:cat" src="assets/crop/pet-cat.png" alt=""><img data-show="species:dog" src="assets/crop/pet-dog.png" alt=""></div><div class="p-pn" data-bind="name"></div></div>
+      <div class="p-kv if-feed"><div><small data-t="kv_times">Today’s Eating Times</small><b>0</b></div><div><small data-t="kv_dur">Today’s Eating Duration</small><b>—</b></div></div>
+      <div class="p-kv if-water"><div><small data-t="kv_drinks">Today’s Drinking Times</small><b>0</b></div><div><small data-t="kv_intake">Today’s Water Intake</small><b>—</b></div></div>
+    </div>
+    <p class="p-lead"><span class="if-feed" data-t="feed_lead">Try it now: serve a first snack and watch it land in the log.</span><span class="if-water" data-t="water_lead">Try it now: set a daily water goal and see the first drink logged.</span></p>
+    <p class="p-ttl if-feed" data-t="feed_ttl">Feeding Amount</p>
+    <div class="p-card p-amt if-feed">
+      <img src="assets/crop/cup.png" alt="">
+      <div class="p-q" data-t="feed_q">1/12 cup(s)</div>
+      <div class="p-sl"><button class="p-pm" aria-label="Less">−</button><div class="p-tr"><i></i><u></u></div><button class="p-pm" aria-label="More">+</button></div>
+      <button class="p-feednow" data-go="log"><span data-t="feed_cta">Feed Now</span></button>
+    </div>
+    <p class="p-ttl if-water" data-t="water_ttl">Water Intake</p>
+    <div class="p-card p-amt if-water">
+      <div class="p-ring"><div><div><b>150<small style="display:inline"> ml</small></b><small data-t="water_goal">Daily goal</small></div></div></div>
+      <div class="p-sl"><button class="p-pm" aria-label="Less">−</button><div class="p-tr"><i></i><u></u></div><button class="p-pm" aria-label="More">+</button></div>
+      <button class="p-feednow" data-go="log"><span data-t="water_cta">Save Goal</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="scr" data-id="log">
+  <div class="s-pad">
+    <div class="p-ntf"><img src="assets/brand/appstore-icon.jpg" alt=""><div><b>Petlibro</b><span class="if-feed"><span data-bind="name"></span> <span data-t="ntf_feed">has visited the feeder for a meal</span></span><span class="if-water"><span data-bind="name"></span> <span data-t="ntf_water">has visited the fountain for a drink</span></span></div><em data-t="ntf_now">now</em></div>
+    <div class="p-card p-pet">
+      <div><div class="p-ava"><img data-show="species:cat" src="assets/crop/pet-cat.png" alt=""><img data-show="species:dog" src="assets/crop/pet-dog.png" alt=""></div><div class="p-pn" data-bind="name"></div></div>
+      <div class="p-kv if-feed"><div><small data-t="kv_times">Today’s Eating Times</small><b>1</b></div><div><small data-t="kv_dur">Today’s Eating Duration</small><b>2m40s</b></div></div>
+      <div class="p-kv if-water"><div><small data-t="kv_drinks">Today’s Drinking Times</small><b>1</b></div><div><small data-t="kv_intake">Today’s Water Intake</small><b>20 ml</b></div></div>
+    </div>
+    <div class="p-card p-ev">
+      <div class="p-evi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></div>
+      <div><small data-t="ev_today">Today · 08:12</small><b class="if-feed" data-t="ev_feed">First meal · 1/12 cup(s)</b><b class="if-water" data-t="ev_water">First drink · 20 ml</b></div><em data-t="ev_done">Complete</em>
+    </div>
+    <div class="p-card p-lock">
+      <span class="p-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="if-carel">Petlibro Care</span><span class="if-vc">Video Cloud</span></span>
+      <h3><span class="if-carel"><span data-t="lock_h1">Is this a normal day for</span> <span data-bind="name"></span>?</span><span class="if-vc"><span data-t="lock_vh">Watch every meal again, any day</span></span></h3>
+      <div class="p-bars"><i style="height:38%"></i><i class="p-band" style="height:52%"></i><i style="height:61%"></i><i style="height:44%"></i><i class="p-band" style="height:70%"></i><i style="height:57%"></i><i style="height:82%"></i><i style="height:48%"></i><i style="height:66%"></i></div>
+      <p class="if-carel"><span data-t="lock_p">See eating and drinking trends, and how they compare with</span> <b data-t="lock_pets">500,000+ registered pets.</b></p>
+      <p class="if-vc" data-t="lock_vp">Save mealtime moments securely in the cloud, then replay or share them.</p>
+    </div>
+    <button class="p-go" data-go="plan"><span class="if-carel"><span data-t="log_cta">See trends for</span> <span data-bind="name"></span></span><span class="if-vc" data-t="log_vcta">Keep every meal on video</span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="plan">
+  <div class="s-pad p-rec">
+    <div class="p-nav"><button class="p-bk" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><b data-t="plan_nav">Your plan</b></div>
+    <img class="p-shield if-care" src="assets/crop/shield-1.png" alt=""><img class="p-shield if-plus" src="assets/crop/shield-2.png" alt=""><img class="p-camimg if-vc" src="assets/crop/cam-live.png" alt="">
+    <p class="p-kick"><span data-t="plan_kick">Recommended for</span> <span data-h="who"></span></p>
+    <h1 class="p-pname" data-h="plan"></h1>
+    <p class="p-why" data-h="reason"></p>
+    <div class="p-card">
+      <div class="p-feat if-plus"><div class="p-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.4"/><path d="M3.5 19c.6-3 2.9-5 5.5-5s4.9 2 5.5 5M15 14.2c2.4-.3 4.6 1.4 5.2 4.3"/></svg></div><div><b data-t="f_multi">Every pet on one account</b><span data-t="f_multi_s">Track each pet on its own, side by side.</span></div></div>
+      <div class="p-feat if-carel"><div class="p-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></div><div><b data-t="f_track">Comprehensive health tracking</b><span data-t="f_track_s">Eating, drinking, weight and activity, with trend charts.</span></div></div>
+      <div class="p-feat if-carel"><div class="p-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12h4l3-7 4 14 3-7h6"/></svg></div><div><b data-t="f_ins">Smart behavioral insights</b><span data-t="f_ins_s">Spot important changes early.</span></div></div>
+      <div class="p-feat if-care"><div class="p-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3"/></svg></div><div><b data-t="f_comm">Community reference ranges</b><span data-t="f_comm_s">Compare with 500,000+ registered pets.</span></div></div>
+      <div class="p-feat if-vc"><div class="p-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 19.5 10 4 4 0 0 1 18 18z"/></svg></div><div><b data-t="f_cloud">7-day video history</b><span data-t="f_cloud_s">No more memory card filling up or failing.</span></div></div>
+      <div class="p-feat if-vc"><div class="p-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 21h4"/></svg></div><div><b data-t="f_alert">Smart event notifications</b><span data-t="f_alert_s">Alerts when your pet visits the feeder.</span></div></div>
+      <div class="p-feat if-vc"><div class="p-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></div><div><b data-t="f_share">Easy playback and sharing</b><span data-t="f_share_s">Download or share the best moments.</span></div></div>
+    </div>
+    <span class="p-alt" data-t="plan_alt">Compare all plans</span>
+    <button class="p-go" data-go="paywall"><span data-t="plan_cta">Continue</span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="paywall">
+  <div class="p-hero"><img class="if-carel" src="assets/crop/cam-live.png" alt=""><img class="if-vc" src="assets/crop/cam-phone.png" alt=""></div>
+  <button class="s-x" data-go="offer" aria-label="Close">✕</button>
+  <div class="s-pad p-pw">
+    <div class="p-pwtop"><img class="if-care" src="assets/crop/shield-1.png" alt=""><img class="if-plus" src="assets/crop/shield-2.png" alt=""><img class="if-vc" src="assets/crop/shield-1.png" alt=""><div><small data-h="plan"></small><h1 data-h="pwh"></h1></div></div>
+    <div class="p-per"><button data-pick="bill:yr"><span data-t="pw_yr">Yearly</span> <span class="p-sv" data-t="pw_save">SAVE 17%</span></button><button data-pick="bill:mo"><span data-t="pw_mo">Monthly</span></button></div>
+    <div class="p-card p-price">
+      <div data-show="bill:yr"><b><span data-h="yr"></span> <small data-t="pw_peryr">/ year</small></b><p><span data-h="pm"></span> <span data-t="pw_pm">a month · 17% less than monthly</span></p></div>
+      <div data-show="bill:mo"><b><span data-h="mo"></span> <small data-t="pw_permo">/ month</small></b><p data-t="pw_flex">Billed monthly. Switch to yearly any time.</p></div>
+    </div>
+    <div class="p-inc">
+      <div class="if-plus"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="pw_i_multi">Every pet on one account</span></div>
+      <div class="if-carel"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="pw_i_track">Eating, drinking and weight trends</span></div>
+      <div class="if-carel"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="pw_i_ins">Behavioral insights and care reminders</span></div>
+      <div class="if-care"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="pw_i_all">Works with every Petlibro device</span></div>
+      <div class="if-vc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="pw_i_cloud">7-day video history in the cloud</span></div>
+      <div class="if-vc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="pw_i_alert">Smart alerts when your pet eats</span></div>
+      <div class="if-vc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="pw_i_share">Download and share the best clips</span></div>
+    </div>
+    <div class="p-proof">
+      <div class="p-rate"><b><i>★</i> 4.5</b><span data-t="pw_rating">7.4K App Store ratings</span></div>
+      <div><b data-t="pw_n">500,000+</b><span data-t="pw_pets">registered pets on Petlibro</span></div>
+    </div>
+    <button class="p-go" style="margin-top:auto"><span data-h="cta"></span></button>
+    <div class="p-safe"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span data-t="pw_safe">Changed your mind? Full refund within 7 days.</span></div>
+    <p class="p-legal"><span data-h="legal"></span> <u data-t="pw_terms">Terms</u> · <u data-t="pw_priv">Privacy</u> · <u data-t="pw_rest">Restore</u></p>
+  </div>
+</section>
+
+<section class="scr sheet" data-id="offer">
+  <div class="s-pad p-sheet" style="padding:0">
+    <div class="p-sh">
+      <div class="p-grab"></div>
+      <button class="p-x" data-go="paywall" aria-label="Close">✕</button>
+      <h1 class="p-big" style="margin-top:8px;padding-right:40px"><span data-t="of_h">Not ready for a whole year?</span></h1>
+      <p class="p-lead"><span data-t="of_p1">Start with one month for</span> <b data-h="who"></b>. <span data-t="of_p2">Cancel any time in Settings.</span></p>
+      <div class="p-card p-off"><img class="if-care" src="assets/crop/shield-1.png" alt=""><img class="if-plus" src="assets/crop/shield-2.png" alt=""><img class="if-vc" src="assets/crop/dev-camera.png" alt=""><div><b data-h="plan"></b><span data-t="of_mo">Monthly plan</span></div><strong><span data-h="mo"></span><small data-t="of_permo">per month</small></strong></div>
+      <div class="p-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="of_ok1">Same plan, same features, no yearly commitment.</span></div>
+      <div class="p-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-t="of_ok2">Feeding, watering and device controls stay free either way.</span></div>
+      <button class="p-go" style="margin-top:6px"><span data-h="ocet"></span></button>
+      <button class="p-ghost" data-go="paywall"><span data-t="of_no">Not now</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="scr" data-id="today" data-aside>
+  <div class="s-pad">
+    <div class="p-nav"><button class="p-bk" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><b data-t="td_nav">Subscriptions</b></div>
+    <div class="p-card p-tl">
+      <h4>Video Cloud</h4>
+      <div class="p-tr2">Standard<span>$5.99/mo · $59.99/yr</span></div>
+      <div class="p-tr2">Plus<span>$11.99/mo · $119.99/yr</span></div>
+    </div>
+    <div class="p-card p-tl">
+      <h4>Petlibro Care</h4>
+      <div class="p-tr2">Care<span>$5.99/mo · $59.99/yr</span></div>
+      <div class="p-tr2">Care Plus<span>$12.99/mo · $129.99/yr</span></div>
+    </div>
+    <div class="p-card p-tl">
+      <h4>Video Cloud AI</h4>
+      <div class="p-tr2">AI Standard<span>$11.99/mo</span></div>
+      <div class="p-tr2">AI Premium<span>$16.99/mo</span></div>
+    </div>
+    <p class="p-note" data-t="td_note">Subscription period: one month / one year. Cancel renewal in your Apple ID settings at least 24 hours before it ends.</p>
+    <button class="p-go"><span data-t="td_cta">Subscribe</span></button>
+  </div>
+</section>
+
+<!-- SCREENS:END -->
+
+      </div></div>
+      <div class="au-pn" id="panel" aria-live="polite"></div>
+    </div>
+    <p class="au-hint">Close the paywall with ✕ to see idea 5. Pick the camera feeder or 2+ pets to see the plan change.</p>
+    <!-- shown when CONTENT.liveUrl is set: assets/qr-app.png = qr.swift "<liveUrl>?app" -->
+    <div class="au-qr" id="qrCard" hidden><img src="assets/qr-app.png" alt="QR code that opens the prototype full screen"><div><b>Try it on your phone</b><p>Scan to open the prototype full screen, the way a new user would see it.</p></div></div>
+    <div class="au-mobw" id="qrMob" hidden><a class="au-btn" href="?app">Open it full screen</a></div>
+  </div>
+</section>
+
+<!-- the paywall TODAY vs PROPOSED — built from CONTENT.compare (stills: assets/hero/<today>.png, <proposed>.png) -->
+<section class="au-sec" id="compare" hidden><div class="au-wrap" id="cmpBody"></div></section>
+
+<footer class="au-foot" id="sources">
+  <div class="au-wrap">
+    <details id="srcDetails">
+      <summary>Where the numbers come from</summary>
+      <div class="au-srcs" id="srcBody"></div>
+    </details>
+    <p class="au-fine" id="fine"></p>
+    <div class="au-cta-line">
+      <p>Every screen here can be built and A/B tested in Adapty’s Flow Builder, with no app release.</p>
+      <a class="au-btn" href="https://adapty.io/flow-paywall-builder/" target="_blank" rel="noopener">About Flow Builder</a>
+    </div>
+  </div>
+</footer>
+
+<!-- extras: video dialog (CONTENT.video), ?app bar, ?tour overlay (CONTENT.tour) -->
+<dialog class="au-vid" id="vid" aria-label="Walkthrough video">
+  <div class="au-vid-in"><video id="vidEl" controls muted playsinline preload="none"></video></div>
+  <div class="au-vid-bar"><a id="vidDl" download>Download the MP4</a><button type="button" class="au-vid-x" id="vidX">Close</button></div>
+</dialog>
+<div class="au-scrim" id="abScrim"></div>
+<div class="au-appbar" id="appbar">
+  <button type="button" class="au-ab-why" id="abWhy"><i></i><span id="abT"></span><em>Why ↑</em></button>
+  <div class="au-lsw" id="abLang" role="group" aria-label="Language"></div>
+</div>
+<div class="au-tour" aria-hidden="true">
+  <div class="au-tb"><img src="assets/brand/appstore-icon.jpg" alt="">Growth Audit <small>· Petlibro</small></div>
+  <div class="au-tby">Prepared by Adapty</div>
+  <div class="au-tcap" id="tCap"></div>
+  <div class="au-ttap" id="tTap"></div>
+  <div class="au-tprog"><i id="tProg"></i></div>
+  <div class="au-tintro" id="tIntro"></div>
+  <div class="au-tend" id="tEnd"></div>
+</div>
+
+<!-- CONTENT — all the audit's words and numbers, as data. Schema (brand-check enforces it):
+     ideas  : 3–5 rows, ranked (the audit is five ideas, never fifteen). screen = the screen that shows it.
+     panel  : one entry per screen. idea = its number in ideas (1-based) or 0 for a context screen.
+              why on an idea screen reads "<b>Try</b> X, <b>because</b> Y." in ≤ 45 words; iv = its range.
+              why on a context screen is one line saying what it sets up.
+     hero   : three screen ids shown as stills in the hero — run hero-stills.sh after the screens are done.
+     outcome: combined "up to" numbers, PS-deck style, never above the ceiling of the per-idea ranges.
+     sources: public facts only — App Store, their site, their screens. No sales research on this page.
+     EXTRAS (each one hides itself when left empty):
+     langs  : [{"code":"en","name":"English"},{"code":"es","name":"Español · Spain prices"}] — first = the markup's language
+     i18n   : {"es": {"<data-t key>": "text with {tokens}"}} — every data-t key, for every language after the first
+     prices : {"es": {"yr": "39,99 €", …}} — {tokens} in i18n strings; that storefront's real IAP prices
+     labelsI18n: {"es": {"goal": {"a": "…"}}} — C.labels per language (data-bind="label:…")
+     liveUrl: final Pages URL (QR card + video end card); the QR file encodes liveUrl + "?app"
+     video / poster: "assets/walkthrough.mp4" / "assets/walkthrough-poster.jpg" (record-video.sh)
+     compare: {today, proposed, kicker, title, sub, todayCap, rows:[{h, idea, was, now}], kept} — today = a data-aside screen
+     tour   : {segments:[{id, d, st, tap:[selector-in-screen, ms], pop, reveal, end}], captions:{id:{n|k, t, l, o, ol}},
+              introLede, endTitle} — ~30 s total; the last segment has end:true (the end card) -->
+<script type="application/json" id="content">
+{
+ "app": "Petlibro",
+ "state": {
+  "device": "feeder",
+  "species": "cat",
+  "pets": "1",
+  "name": "Mochi",
+  "bill": "yr"
+ },
+ "labels": {
+  "device": {
+   "feeder": "Granary Smart Feeder",
+   "camera": "Granary Smart Camera Feeder",
+   "fountain": "Dockstream 2 Smart Fountain"
+  },
+  "species": {
+   "cat": "Cat",
+   "dog": "Dog"
+  }
+ },
+ "chips": {
+  "device": "Add device",
+  "pet": "Pet profile",
+  "feed": "Feed now",
+  "log": "First log",
+  "plan": "Your plan",
+  "paywall": "Paywall",
+  "offer": "On close"
+ },
+ "hero": [
+  "log",
+  "paywall",
+  "plan"
+ ],
+ "outcome": {
+  "cr": "+20%",
+  "arpu": "+15%"
+ },
+ "ideas": [
+  {
+   "screen": "pet",
+   "title": "Ask about the pet, then use the answers everywhere",
+   "what": "Pairing already tells you the device. Add three taps at setup (the pet’s name, cat or dog, how many pets share it) and carry them forward: the first log, the trend card and the paywall all say <b>Mochi</b>, and the pet count decides between Care Standard and Care Plus.",
+   "impact": "+10–20%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "log",
+   "title": "A first meal for their pet before any price",
+   "what": "Let them serve a first snack with your own Feed Now control, then show the log the device just produced, with Care’s comparison against <b>500,000+ registered pets</b> locked right beside it. The paywall becomes the next step of something they’ve just seen work.",
+   "impact": "+10–15%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "plan",
+   "title": "One plan for their device, not three lines",
+   "what": "Your App Store list sells Care, Video Cloud and Video Cloud AI across ten plans. At setup, recommend one: Video Cloud Standard for a camera feeder, Care Standard for one pet, Care Plus for two or more, with the reason in a line. The rest stays one tap away.",
+   "impact": "+5–15%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "paywall",
+   "title": "Proof, the yearly saving and the refund at the button",
+   "what": "<code>$59.99</code> a year is <b>$5.00 a month, 17% less than paying monthly</b>. Put that next to 4.5★ from 7.4K ratings and your own 7-day full-refund policy, right where a hardware owner weighs a second payment.",
+   "impact": "+10–15%",
+   "il": "ARPU, from a bigger yearly share"
+  },
+  {
+   "screen": "offer",
+   "title": "Catch the people who close the paywall",
+   "what": "Closing the yearly paywall opens a lighter ask on a real plan: one month of Care at <code>$5.99</code>, cancel any time. The same sheet doubles as a cancel-intent save when someone taps Manage subscription, before you send them to Settings.",
+   "impact": "+10–15%",
+   "il": "ARPU, from people who said no to yearly"
+  }
+ ],
+ "panel": {
+  "device": {
+   "idea": 0,
+   "t": "Add a device",
+   "why": "Pairing already tells the app which device they own. Every screen after this builds on it."
+  },
+  "pet": {
+   "idea": 1,
+   "t": "Ask about the pet, then use the answers",
+   "why": "<b>Try</b> three taps for the pet (name, cat or dog, how many share the device) and use them on every screen after, <b>because</b> owners buy for their pet, not for a subscription, and the count tells you which plan fits.",
+   "iv": "CR +10–20%",
+   "il": "to purchase",
+   "also": "Pick 2 or 3+ pets here and the plan screen switches to Care Plus. Pick the camera feeder on the first screen and it becomes Video Cloud."
+  },
+  "feed": {
+   "idea": 0,
+   "t": "Your Feed Now control, kept",
+   "why": "Their own Feeding Amount card and Feed Now button, unchanged. A real first feed sets up idea 2."
+  },
+  "log": {
+   "idea": 2,
+   "t": "A first meal before any price",
+   "why": "<b>Try</b> showing the log their first feed just produced, with Care’s comparison locked beside it, <b>because</b> the device has just proved it works, and “is this normal for Mochi?” is exactly the question Care answers.",
+   "iv": "CR +10–15%",
+   "il": "to purchase",
+   "also": "Idea 1 shows here too: the notification, the card and the button all name the pet."
+  },
+  "plan": {
+   "idea": 3,
+   "t": "One plan for their device",
+   "why": "<b>Try</b> recommending one plan from the device and pet count, with the reason in one line, <b>because</b> three subscription lines and ten plans at the decision point turn a yes into a comparison exercise.",
+   "iv": "CR +5–15%",
+   "il": "to purchase",
+   "also": "“Compare all plans” keeps the full list one tap away for people who want it."
+  },
+  "paywall": {
+   "idea": 4,
+   "t": "Proof, saving and refund at the button",
+   "why": "<b>Try</b> the yearly price as $5.00 a month next to your rating and 7-day refund, <b>because</b> someone who just paid for hardware wants a second payment to feel small, trusted and reversible.",
+   "iv": "ARPU +10–15%",
+   "il": "from a bigger yearly share",
+   "also": "Idea 1 shows here too: the headline and the button name the pet. Close it with ✕ to see idea 5."
+  },
+  "offer": {
+   "idea": 5,
+   "t": "Catch the people who close the paywall",
+   "why": "<b>Try</b> one month of the same plan when they close the yearly paywall, <b>because</b> “not a year yet” is a different no from “not at all”, and a real monthly plan answers it without a discount.",
+   "iv": "ARPU +10–15%",
+   "il": "from people who said no to yearly",
+   "also": "The same sheet works as a cancel-intent save: show it when someone taps Manage subscription, before they leave for Settings."
+  }
+ },
+ "langs": [
+  {
+   "code": "en",
+   "name": "English"
+  },
+  {
+   "code": "de",
+   "name": "Deutsch · German prices"
+  }
+ ],
+ "prices": {
+  "en": {
+   "care_yr": "$59.99",
+   "care_mo": "$5.99",
+   "care_pm": "$5.00",
+   "plus_yr": "$129.99",
+   "plus_mo": "$12.99",
+   "plus_pm": "$10.83",
+   "vc_yr": "$59.99",
+   "vc_mo": "$5.99",
+   "vc_pm": "$5.00"
+  },
+  "de": {
+   "care_yr": "69,99 €",
+   "care_mo": "6,99 €",
+   "care_pm": "5,83 €",
+   "plus_yr": "149,99 €",
+   "plus_mo": "14,99 €",
+   "plus_pm": "12,50 €",
+   "vc_yr": "69,99 €",
+   "vc_mo": "6,99 €",
+   "vc_pm": "5,83 €"
+  }
+ },
+ "labelsI18n": {
+  "de": {
+   "species": {
+    "cat": "Katze",
+    "dog": "Hund"
+   }
+  }
+ },
+ "i18n": {
+  "de": {
+   "dev_nav": "Gerät hinzufügen",
+   "dev_ttl": "Wähle dein Gerät",
+   "dev_feeder": "WLAN-Futterautomat · PLAF103",
+   "dev_camera": "Futterautomat mit Kamera · PLAF203",
+   "dev_fountain": "Smarter Trinkbrunnen",
+   "dev_tip": "Granary-Besitzer: Scanne den QR-Code auf deinem Gerät oder in der Anleitung, damit du in der richtigen App bist.",
+   "pet_nav": "Haustierprofil",
+   "pet_h": "Erzähl uns von deinem Haustier",
+   "pet_name": "Name",
+   "pet_species": "Katze oder Hund",
+   "pet_cat": "Katze",
+   "pet_dog": "Hund",
+   "pet_count": "Haustiere am Gerät",
+   "pet_note": "Damit stellen wir Portionen ein, benennen deine Protokolle und schlagen den einen passenden Plan vor.",
+   "pet_cta": "Speichern",
+   "kv_times": "Mahlzeiten heute",
+   "kv_dur": "Fressdauer heute",
+   "kv_drinks": "Trinkvorgänge heute",
+   "kv_intake": "Wasseraufnahme heute",
+   "feed_lead": "Probier es gleich aus: Gib einen ersten Snack und sieh ihn im Protokoll.",
+   "water_lead": "Probier es gleich aus: Setze ein Trinkziel und sieh den ersten Schluck im Protokoll.",
+   "feed_ttl": "Futtermenge",
+   "feed_q": "1/12 Becher",
+   "feed_cta": "Jetzt füttern",
+   "water_ttl": "Wasseraufnahme",
+   "water_goal": "Tagesziel",
+   "water_cta": "Ziel speichern",
+   "ntf_feed": "war zum Fressen am Futterautomaten",
+   "ntf_water": "war zum Trinken am Brunnen",
+   "ntf_now": "jetzt",
+   "ev_today": "Heute · 08:12",
+   "ev_feed": "Erste Mahlzeit · 1/12 Becher",
+   "ev_water": "Erster Schluck · 20 ml",
+   "ev_done": "Erledigt",
+   "lock_h1": "Ist das ein normaler Tag für",
+   "lock_vh": "Jede Mahlzeit nochmal ansehen",
+   "lock_p": "Sieh Trends beim Fressen und Trinken und den Vergleich mit",
+   "lock_pets": "über 500.000 registrierten Haustieren.",
+   "lock_vp": "Speichere Fütterungsmomente sicher in der Cloud, dann ansehen oder teilen.",
+   "log_cta": "Trends ansehen für",
+   "log_vcta": "Jede Mahlzeit auf Video behalten",
+   "plan_nav": "Dein Plan",
+   "plan_kick": "Empfohlen für",
+   "f_multi": "Alle Haustiere in einem Konto",
+   "f_multi_s": "Jedes Tier einzeln erfassen, direkt nebeneinander.",
+   "f_track": "Umfassendes Gesundheits-Tracking",
+   "f_track_s": "Fressen, Trinken, Gewicht und Aktivität mit Trenddiagrammen.",
+   "f_ins": "Smarte Verhaltensanalysen",
+   "f_ins_s": "Wichtige Veränderungen früh erkennen.",
+   "f_comm": "Vergleichswerte der Community",
+   "f_comm_s": "Vergleich mit über 500.000 registrierten Haustieren.",
+   "f_cloud": "7 Tage Videoverlauf",
+   "f_cloud_s": "Keine volle oder defekte Speicherkarte mehr.",
+   "f_alert": "Smarte Ereignis-Benachrichtigungen",
+   "f_alert_s": "Hinweis, wenn dein Haustier zum Futterautomaten kommt.",
+   "f_share": "Einfach abspielen und teilen",
+   "f_share_s": "Die besten Momente herunterladen oder teilen.",
+   "plan_alt": "Alle Pläne vergleichen",
+   "plan_cta": "Weiter",
+   "pw_yr": "Jährlich",
+   "pw_save": "17 % SPAREN",
+   "pw_mo": "Monatlich",
+   "pw_peryr": "/ Jahr",
+   "pw_pm": "im Monat · 17 % günstiger",
+   "pw_n": "500.000+",
+   "pw_permo": "/ Monat",
+   "pw_flex": "Monatliche Abrechnung. Jederzeit auf jährlich wechseln.",
+   "pw_rating": "App-Store-Bewertungen",
+   "pw_pets": "registrierte Haustiere bei Petlibro",
+   "pw_i_multi": "Alle Haustiere in einem Konto",
+   "pw_i_track": "Trends bei Fressen, Trinken und Gewicht",
+   "pw_i_ins": "Verhaltensanalysen und Pflege-Erinnerungen",
+   "pw_i_all": "Funktioniert mit jedem Petlibro-Gerät",
+   "pw_i_cloud": "7 Tage Videoverlauf in der Cloud",
+   "pw_i_alert": "Smarte Hinweise, wenn dein Tier frisst",
+   "pw_i_share": "Die besten Clips laden und teilen",
+   "pw_safe": "Doch nicht das Richtige? Volle Erstattung innerhalb von 7 Tagen.",
+   "pw_terms": "AGB",
+   "pw_priv": "Datenschutz",
+   "pw_rest": "Wiederherstellen",
+   "of_h": "Noch nicht bereit für ein ganzes Jahr?",
+   "of_p1": "Starte mit einem Monat für",
+   "of_p2": "Jederzeit in den Einstellungen kündbar.",
+   "of_mo": "Monatsplan",
+   "of_permo": "pro Monat",
+   "of_ok1": "Gleicher Plan, gleiche Funktionen, keine Jahresbindung.",
+   "of_ok2": "Füttern, Trinken und Gerätesteuerung bleiben so oder so kostenlos.",
+   "of_no": "Jetzt nicht",
+   "td_nav": "Abonnements",
+   "td_note": "Laufzeit: ein Monat / ein Jahr. Kündige die Verlängerung mindestens 24 Stunden vor Ablauf in deinen Apple-ID-Einstellungen.",
+   "td_cta": "Abonnieren"
+  }
+ },
+ "liveUrl": "https://eddieatadapty.github.io/petlibro-flow-rebuild/",
+ "video": "assets/walkthrough.mp4",
+ "poster": "assets/walkthrough-poster.jpg",
+ "compare": {
+  "today": "today",
+  "proposed": "paywall",
+  "kicker": "The paywall, side by side",
+  "title": "Ten plans today. One for Mochi.",
+  "sub": "Same plans, same prices, a different decision.",
+  "todayCap": "your plan list as the App Store shows it, not your live screen",
+  "rows": [
+   {
+    "h": "Headline",
+    "idea": 1,
+    "was": "The service name",
+    "now": "“Know how Mochi is really doing”"
+   },
+   {
+    "h": "Choice",
+    "idea": 3,
+    "was": "Three lines, ten plans",
+    "now": "One plan, picked from the device and pet count"
+   },
+   {
+    "h": "Price",
+    "idea": 4,
+    "was": "$5.99/mo · $59.99/yr side by side",
+    "now": "$59.99 a year = $5.00 a month, 17% less than monthly"
+   },
+   {
+    "h": "Proof and refund",
+    "idea": 4,
+    "was": "On the store page and in your FAQ",
+    "now": "4.5★ from 7.4K ratings and the 7-day refund at the button"
+   },
+   {
+    "h": "On close",
+    "idea": 5,
+    "was": "Not seen from outside",
+    "now": "One month of the same plan, cancel any time"
+   }
+  ],
+  "kept": "Kept: your colours, cards, Feed Now control, plan names and App Store prices."
+ },
+ "tour": {
+  "introLede": "Five ideas to turn more Petlibro device owners into subscribers.",
+  "endTitle": "Five ideas, built into your own setup flow.",
+  "segments": [
+   {
+    "id": "device",
+    "d": 3200,
+    "tap": [
+     ".p-dev",
+     2500
+    ]
+   },
+   {
+    "id": "pet",
+    "d": 2600
+   },
+   {
+    "id": "pet",
+    "d": 1700,
+    "st": {
+     "pets": "1"
+    },
+    "tap": [
+     ".p-save",
+     1100
+    ]
+   },
+   {
+    "id": "feed",
+    "d": 2700,
+    "tap": [
+     ".if-feed .p-feednow",
+     2000
+    ]
+   },
+   {
+    "id": "log",
+    "d": 3400,
+    "pop": ".p-lock",
+    "tap": [
+     ".p-go",
+     2800
+    ]
+   },
+   {
+    "id": "plan",
+    "d": 3200,
+    "tap": [
+     ".p-go",
+     2600
+    ]
+   },
+   {
+    "id": "paywall",
+    "d": 3200
+   },
+   {
+    "id": "paywall",
+    "d": 1900,
+    "tap": [
+     ".s-x",
+     1300
+    ]
+   },
+   {
+    "id": "offer",
+    "d": 3400
+   },
+   {
+    "id": "offer",
+    "d": 3600,
+    "end": true
+   }
+  ],
+  "captions": {
+   "device": {
+    "k": "Context",
+    "t": "Setup knows the device",
+    "l": "Pairing tells the app which feeder or fountain they own."
+   },
+   "pet": {
+    "n": 1,
+    "t": "Ask about the pet",
+    "l": "Name, cat or dog, how many pets. Used on every screen after.",
+    "o": "CR +10–20%",
+    "ol": "to purchase"
+   },
+   "feed": {
+    "k": "Context",
+    "t": "Your Feed Now, kept",
+    "l": "A real first feed, with your own control."
+   },
+   "log": {
+    "n": 2,
+    "t": "A first meal before any price",
+    "l": "The log it just made, with Care’s comparison locked beside it.",
+    "o": "CR +10–15%",
+    "ol": "to purchase"
+   },
+   "plan": {
+    "n": 3,
+    "t": "One plan for their device",
+    "l": "One pet and a feeder: Care Standard. Not three lines.",
+    "o": "CR +5–15%",
+    "ol": "to purchase"
+   },
+   "paywall": {
+    "n": 4,
+    "t": "Proof, saving, refund",
+    "l": "$5.00 a month, 4.5★, full refund within 7 days.",
+    "o": "ARPU +10–15%",
+    "ol": "bigger yearly share"
+   },
+   "offer": {
+    "n": 5,
+    "t": "Catch who closes it",
+    "l": "One month of the same plan. Also a cancel-intent save.",
+    "o": "ARPU +10–15%",
+    "ol": "from people who said no"
+   }
+  }
+ },
+ "grounding": "Impact ranges are Adapty’s expected effect from teardowns and A/B tests across 30,000+ subscription apps, not measured lift for Petlibro. They overlap, so they don’t add up.",
+ "sources": [
+  {
+   "group": "Prices",
+   "items": [
+    {
+     "dt": "Care $5.99/mo · $59.99/yr · Care Plus $12.99/mo · $129.99/yr",
+     "dd": "US App Store In-App Purchases (Care Monthly, Care Yearly, Care Plus Monthly, Care Plus Yearly), checked October 2026, and your listing’s subscription description."
+    },
+    {
+     "dt": "Video Cloud Standard $5.99/mo · $59.99/yr",
+     "dd": "US App Store In-App Purchases (Standard Monthly, Standard Yearly); the listing names these as the cloud storage prices."
+    },
+    {
+     "dt": "17% less than monthly · $5.00 a month",
+     "dd": "Computed from those prices ($59.99 vs 12 × $5.99 = $71.88). Matches “Save up to 17%” on petlibro.com/products/petlibro-care."
+    },
+    {
+     "dt": "Germany: Care 6,99 € / 69,99 €, Care Plus 14,99 € / 149,99 €, Standard 6,99 € / 69,99 €",
+     "dd": "German App Store In-App Purchases. Saving and per-month figures recomputed from them (5,83 €, 12,50 €)."
+    },
+    {
+     "dt": "Not used",
+     "dd": "Plus (Video Cloud) $11.99/mo · $119.99/yr, AI Standard $11.99/mo, AI Premium $16.99/mo: real plans, kept off the setup paywall on purpose (idea 3). Web prices ($47.99 Care, $95.99 Video Cloud) are web-store promotions, not App Store prices."
+    }
+   ]
+  },
+  {
+   "group": "Proof",
+   "items": [
+    {
+     "dt": "4.5★ · 7.4K ratings",
+     "dd": "US App Store listing (4.46 from 7,425 ratings), October 2026."
+    },
+    {
+     "dt": "500,000+ registered pets",
+     "dd": "petlibro.com Care page: “compare their progress to over 500,000 registered pets”."
+    },
+    {
+     "dt": "Full refund within 7 days",
+     "dd": "petlibro.com Care and Video Cloud FAQ: cancel within 7 days for a full refund. Worth confirming how it applies to App Store purchases before it ships."
+    },
+    {
+     "dt": "German storefront rating not shown",
+     "dd": "3.8 from 274 ratings in Germany: we let the community count carry proof on the German paywall rather than show a thin rating."
+    }
+   ]
+  },
+  {
+   "group": "Features and copy",
+   "items": [
+    {
+     "dt": "Care and Video Cloud features",
+     "dd": "Your own wording from petlibro.com/products/petlibro-care and /products/petlibro-video-cloud (health tracking, behavioral insights, 7-day history, smart event notifications, playback and sharing)."
+    },
+    {
+     "dt": "“has visited the feeder for a meal”",
+     "dd": "Your notification wording, from the Care page artwork (“Felix has visited the fountain for a drink”)."
+    },
+    {
+     "dt": "Device list and QR note",
+     "dd": "Your App Store listing (supported devices, model codes, the Granary QR-code note)."
+    },
+    {
+     "dt": "German copy",
+     "dd": "Our translation, not yours. Germany is your largest non-English storefront by ratings (274, vs 195 in Japan and 98 in France)."
+    }
+   ]
+  },
+  {
+   "group": "Design",
+   "items": [
+    {
+     "dt": "Colours and components",
+     "dd": "Sampled from your App Store screenshots: warm grey ground, white cards, tan selection, brown charts, the near-black Feed Now button, gold highlight."
+    },
+    {
+     "dt": "Art",
+     "dd": "Product photos, Care shields and the dog avatar from petlibro.com; the cat, the cup and the camera-feeder scene cut from your App Store screenshots."
+    },
+    {
+     "dt": "Type",
+     "dd": "Your site uses Söhne (licensed); the prototype uses Inter, the closest Google family."
+    }
+   ]
+  },
+  {
+   "group": "What we couldn’t see",
+   "items": [
+    {
+     "dt": "Your live setup flow and paywall",
+     "dd": "Petlibro isn’t in the screen library we use, so we built from your App Store listing, screenshots and site. The “today” screen is your plan list as the App Store shows it, not your live screen."
+    },
+    {
+     "dt": "Trials",
+     "dd": "We couldn’t verify an App Store intro offer on Care or Video Cloud, so no trial is shown."
+    }
+   ]
+  }
+ ]
+}
+</script>
+
+<script>
+/* per-app hooks go here: window.onSync = function(S){…}; window.onEnter = function(id, S){…}; window.onLang = function(lang){…};
+   Globals available: S (S.lang = current language), C, cur, ORDER, scr, go(), back(), jump(), sync(), setLang(), fillP(str, lang),
+   SHOT (screenshot/tour run), HERO (hero-still run). Per-language dynamic text: read S.lang in onSync. */
+/* Petlibro hooks: one recommended plan from device + pet count, prices from C.prices[lang] (App Store IAPs). */
+var PLAN = {care: 'Petlibro Care Standard', plus: 'Petlibro Care Plus', vc: 'Video Cloud Standard'};
+var TX = {
+  en: {
+    pet: 'your pet', pets: function(n){ return 'your ' + n + ' pets'; },
+    reason: {
+      care: function(nm, dev, w){ return '<b>' + nm + '</b> is your only pet, and your ' + dev + ' logs every ' + (w ? 'drink' : 'meal') + '.'; },
+      plus: function(n, dev){ return '<b>' + n + ' pets</b> share your ' + dev + '. Care Plus tracks each of them.'; },
+      vc: function(nm){ return 'Your <b>Granary Smart Camera Feeder</b> films every meal ' + nm + ' eats. Video Cloud keeps 7 days of it.'; }
+    },
+    pwh: {care: function(nm){ return 'Know how ' + nm + ' is really doing'; }, plus: function(){ return 'Know how every pet is really doing'; }, vc: function(nm){ return 'Every meal ' + nm + ' eats, saved'; }},
+    cta: {care: function(nm){ return 'Start Care for ' + nm; }, plus: function(){ return 'Start Care Plus'; }, vc: function(){ return 'Start Video Cloud'; }},
+    legal: function(p, yr){ return 'Renews at ' + p + (yr ? '/year' : '/month') + ' until cancelled. Cancel any time in Settings.'; },
+    octa: function(p){ return 'Start with one month · ' + p; }
+  },
+  de: {
+    pet: 'dein Haustier', pets: function(n){ return 'deine ' + n + ' Haustiere'; },
+    reason: {
+      care: function(nm, dev, w){ return '<b>' + nm + '</b> ist dein einziges Haustier, und dein ' + dev + ' erfasst ' + (w ? 'jeden Schluck' : 'jede Mahlzeit') + '.'; },
+      plus: function(n, dev){ return '<b>' + n + ' Haustiere</b> teilen sich deinen ' + dev + '. Care Plus erfasst jedes einzeln.'; },
+      vc: function(nm){ return 'Dein <b>Granary Smart Camera Feeder</b> filmt jede Mahlzeit von ' + nm + '. Video Cloud speichert 7 Tage davon.'; }
+    },
+    pwh: {care: function(nm){ return 'So geht es ' + nm + ' wirklich'; }, plus: function(){ return 'So geht es jedem deiner Haustiere'; }, vc: function(nm){ return 'Jede Mahlzeit von ' + nm + ', gespeichert'; }},
+    cta: {care: function(nm){ return 'Care für ' + nm + ' starten'; }, plus: function(){ return 'Care Plus starten'; }, vc: function(){ return 'Video Cloud starten'; }},
+    legal: function(p, yr){ return 'Verlängert sich für ' + p + (yr ? '/Jahr' : '/Monat') + ' bis zur Kündigung. Jederzeit in den Einstellungen kündbar.'; },
+    octa: function(p){ return 'Mit einem Monat starten · ' + p; }
+  }
+};
+function recPlan(S){ return S.device === 'camera' ? 'vc' : (S.pets === '1' ? 'care' : 'plus'); }
+window.onSync = function(S){
+  var L = TX[S.lang] || TX.en, P = (C.prices || {})[S.lang] || C.prices.en, r = recPlan(S);
+  if (!S.name || S.name === 'there') S.name = 'Mochi';
+  var nm = S.name, n = S.pets === '3' ? '3+' : S.pets, dev = (C.labels.device || {})[S.device] || '';
+  var pin = document.querySelector('.phone-in'); pin.dataset.dev = S.device; pin.dataset.plan = r;
+  var V = {
+    who: r === 'plus' ? L.pets(n) : nm,
+    plan: PLAN[r],
+    reason: r === 'care' ? L.reason.care(nm, dev, S.device === 'fountain') : r === 'plus' ? L.reason.plus(n, dev) : L.reason.vc(nm),
+    pwh: L.pwh[r](nm),
+    yr: P[r + '_yr'], mo: P[r + '_mo'], pm: P[r + '_pm'],
+    cta: L.cta[r](nm),
+    legal: L.legal(S.bill === 'yr' ? P[r + '_yr'] : P[r + '_mo'], S.bill === 'yr'),
+    ocet: L.octa(P[r + '_mo'])
+  };
+  document.querySelectorAll('.phone [data-h]').forEach(function(el){ var v = V[el.dataset.h]; if (v != null) el.innerHTML = v; });
+  /* German storefront: 3.8 from 274 ratings is too thin to lead with, so the community count carries the proof */
+  document.querySelectorAll('.phone .p-rate').forEach(function(el){ el.style.display = S.lang === 'en' ? '' : 'none'; });
+};
+</script>
+<script>
+/* ============ engine — generic, do not fork per app ============ */
+var C = JSON.parse(document.getElementById('content').textContent);
+var S = C.state, scr = {}, ORDER = [], hist = [], cur = null, Q = location.search;
+var SHOT = /[?&](shot|phone|tour)\b/.test(Q), HERO = /[?&]hero\b/.test(Q);
+/* a screen with data-aside (e.g. the paywall TODAY for the side-by-side) renders for stills but is not part of the flow */
+document.querySelectorAll('.scr').forEach(function(s){ scr[s.dataset.id] = s; if (!s.hasAttribute('data-aside')) ORDER.push(s.dataset.id); });
+if (/[?&]shot\b/.test(Q)) document.documentElement.classList.add('shot');
+if (/[?&]phone\b/.test(Q)) document.documentElement.classList.add('shot', 'phoneonly');
+if (/[?&]clear\b/.test(Q)) document.documentElement.classList.add('clear');
+var IDEAS = (C.ideas || []).length;
+
+/* ---- languages: markup is the first language; C.i18n[lang][data-t key] the others; {tokens} from C.prices[lang] ---- */
+var LANGS = C.langs || [], BASE = LANGS.length ? LANGS[0].code : 'en', LANG_DONE = BASE, BASE_LABELS = JSON.parse(JSON.stringify(C.labels || {}));
+if (!S.lang) S.lang = BASE;
+function fillP(s, l){ var P = (C.prices || {})[l] || {}; return String(s).replace(/\{(\w+)\}/g, function(m, k){ return k in P ? P[k] : m; }); }
+function applyLang(){
+  var l = S.lang || BASE; if (l === LANG_DONE) return;
+  var T = (C.i18n || {})[l] || {};
+  document.querySelectorAll('.phone [data-t]').forEach(function(el){
+    if (el._base == null) el._base = el.innerHTML;
+    el.innerHTML = l === BASE || T[el.dataset.t] == null ? el._base : fillP(T[el.dataset.t], l);
+  });
+  C.labels = JSON.parse(JSON.stringify(BASE_LABELS));
+  var LL = (C.labelsI18n || {})[l] || {}; Object.keys(LL).forEach(function(k){ C.labels[k] = LL[k]; });
+  LANG_DONE = l;
+}
+function setLang(l){
+  if (!LANGS.some(function(x){ return x.code === l; })) return;
+  S.lang = l; sync();
+  document.querySelectorAll('[data-setlang]').forEach(function(b){ b.classList.toggle('on', b.dataset.setlang === l); });
+  if (window.onLang) window.onLang(l);
+}
+
+function lab(key){ var v = S[key]; var L = C.labels[key]; if (Array.isArray(v)) return v.map(function(x){ return L && L[x] || x; }).join(', '); return (L && L[v]) || v; }
+function sync(){
+  applyLang();
+  document.querySelectorAll('[data-bind]').forEach(function(el){
+    var b = el.dataset.bind, m = b.split(':');
+    el.textContent = m[0] === 'label' ? lab(m[1]) : m[0] === 'count' ? (S[m[1]] || []).length : (S[b] == null ? '' : S[b]);
+  });
+  document.querySelectorAll('[data-pick]').forEach(function(el){ var p = el.dataset.pick.split(':'); el.classList.toggle('on', S[p[0]] === p[1]); });
+  document.querySelectorAll('[data-toggle]').forEach(function(el){ var p = el.dataset.toggle.split(':'); el.classList.toggle('on', (S[p[0]] || []).indexOf(p[1]) > -1); });
+  document.querySelectorAll('[data-requires]').forEach(function(el){ el.disabled = !(S[el.dataset.requires] || []).length; });
+  document.querySelectorAll('[data-show]').forEach(function(el){ var p = el.dataset.show.split(':'); el.style.display = String(S[p[0]]) === p[1] ? '' : 'none'; });
+  if (window.onSync) window.onSync(S);
+}
+function show(id, dir){
+  var from = scr[cur], to = scr[id]; if (!to || id === cur) return;
+  var sheet = to.classList.contains('sheet');
+  if (from){
+    from.classList.remove('is-active');
+    if (sheet) from.classList.add('under');                                   /* a sheet slides up over the screen that opened it */
+    else if (dir === 'fwd' && !from.classList.contains('sheet')) from.classList.add('is-past');
+  }
+  if (!sheet) Object.keys(scr).forEach(function(k){ var u = scr[k]; if (u !== to && u.classList.contains('under')) { u.classList.remove('under'); if (dir === 'fwd') u.classList.add('is-past'); } });
+  to.classList.remove('is-past', 'under'); to.classList.add('is-active'); cur = id;
+  paint(); if (window.onEnter) window.onEnter(id, S);
+}
+function go(id){ if (cur) hist.push(cur); show(id, 'fwd'); }
+function back(){ if (hist.length) { var p = hist.pop(); scr[cur].classList.remove('is-active'); show(p, 'back'); } }
+function jump(id){
+  Object.keys(scr).forEach(function(k){ scr[k].classList.add('nofx'); scr[k].classList.remove('is-active', 'is-past', 'under'); });
+  var i = ORDER.indexOf(id); hist = ORDER.slice(0, i < 0 ? 0 : i); cur = null;
+  ORDER.slice(0, i).forEach(function(k){ if (!scr[k].classList.contains('sheet')) scr[k].classList.add('is-past'); });
+  if (scr[id] && scr[id].classList.contains('sheet')) {                        /* jumping to a sheet: its opener stays visible under it */
+    for (var j = i - 1; j >= 0; j--) if (!scr[ORDER[j]].classList.contains('sheet')) { scr[ORDER[j]].classList.remove('is-past'); scr[ORDER[j]].classList.add('under'); break; }
+  }
+  show(id, 'jump');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ Object.keys(scr).forEach(function(k){ scr[k].classList.remove('nofx'); }); }); });
+}
+function stepBy(d){ var i = ORDER.indexOf(cur) + d; if (i >= 0 && i < ORDER.length) jump(ORDER[i]); }
+function jumpTo(id){
+  var p = document.getElementById('prototype');
+  if (p && !document.documentElement.classList.contains('appmode')) p.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+  jump(id);
+}
+function paint(){
+  sync();
+  var c = document.getElementById('chips');
+  if (!c.childElementCount) ORDER.forEach(function(id){
+    var p = C.panel[id] || {}, b = document.createElement('button');
+    b.className = 'au-chip'; b.type = 'button'; b.dataset.id = id; b.setAttribute('role', 'tab');
+    b.innerHTML = (p.idea ? '<i>' + p.idea + '</i>' : '') + ((C.chips && C.chips[id]) || id);
+    b.onclick = function(){ jump(id); };
+    c.appendChild(b);
+  });
+  c.querySelectorAll('.au-chip').forEach(function(b){ var on = b.dataset.id === cur; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  var d = C.panel[cur] || {t: cur, why: ''}, n = ORDER.indexOf(cur) + 1;
+  document.getElementById('panel').innerHTML =
+    (d.idea ? '<div class="au-pn-k"><i></i>Idea ' + d.idea + ' of ' + IDEAS + '</div>' : '<div class="au-pn-k au-ctx"><i></i>Context</div>') +
+    '<h3 class="au-pn-t">' + d.t + '</h3><p class="au-pn-h">' + d.why + '</p>' +
+    (d.iv ? '<div class="au-pn-o"><div class="au-lab">Potential outcome · based on Adapty data</div><div class="au-val"><mark>' + d.iv + '</mark></div><div class="au-sub">' + (d.il || '') + '</div></div>' : '') +
+    (d.also ? '<p class="au-pn-a">' + d.also + '</p>' : '') +
+    '<div class="au-pn-nav"><button type="button" onclick="stepBy(-1)"' + (n <= 1 ? ' disabled' : '') + '>‹ Previous</button><span>Screen ' + n + ' of ' + ORDER.length + '</span><button type="button" onclick="stepBy(1)"' + (n === ORDER.length ? ' disabled' : '') + '>Next ›</button></div>';
+  var ab = document.getElementById('abT'); if (ab) ab.textContent = (d.idea ? 'Idea ' + d.idea + ' of ' + IDEAS + ' · ' : '') + (d.t || '');
+}
+document.addEventListener('click', function(e){
+  var j = e.target.closest('[data-jumpto]'); if (j){ e.preventDefault(); jumpTo(j.dataset.jumpto); return; }
+  var L = e.target.closest('[data-setlang]'); if (L){ setLang(L.dataset.setlang); return; }
+  if (e.target.closest('[data-langtoggle]') && LANGS.length > 1){ var k = LANGS.findIndex(function(x){ return x.code === S.lang; }); setLang(LANGS[(k + 1) % LANGS.length].code); return; }
+  var el = e.target.closest('[data-go],[data-back],[data-pick],[data-toggle]'); if (!el) return;
+  if (el.dataset.pick){ var p = el.dataset.pick.split(':'); S[p[0]] = p[1]; sync(); if (el.dataset.advance) setTimeout(function(){ go(el.dataset.advance); }, 170); return; }
+  if (el.dataset.toggle){ var q = el.dataset.toggle.split(':'), a = S[q[0]] = S[q[0]] || [], i = a.indexOf(q[1]); if (i > -1) a.splice(i, 1); else a.push(q[1]); sync(); return; }
+  if ('back' in el.dataset) return back();
+  go(el.dataset.go);
+});
+document.querySelectorAll('[data-input]').forEach(function(inp){
+  inp.value = S[inp.dataset.input] || ''; inp.addEventListener('input', function(){ S[inp.dataset.input] = inp.value.trim() || 'there'; sync(); });
+});
+function $(id){ return document.getElementById(id); }
+
+/* hero stills, shortlist, outcome, sources — from CONTENT */
+$('heroPhones').innerHTML = (C.hero || []).map(function(id, i){
+  var pos = ['l', 'c', 'r'][i] || 'r', t = (C.chips && C.chips[id]) || id;
+  return '<button class="au-hp au-' + pos + '" data-jumpto="' + id + '" aria-label="Open ' + t + '"><img src="assets/hero/' + id + '.png" alt=""></button>';
+}).join('');
+$('ideaList').innerHTML = (C.ideas || []).map(function(r, i){
+  return '<article class="au-idea"><div class="au-num">0' + (i + 1) + '</div><div><h3>' + r.title + '</h3><p>' + r.what + '</p>' +
+    '<button type="button" class="au-lnk" data-jumpto="' + r.screen + '">See it on the screen</button></div>' +
+    '<div class="au-imp"><div class="au-v"><mark>' + r.impact + '</mark></div><div class="au-l">' + r.il + '</div></div></article>';
+}).join('');
+var O = C.outcome || {};
+$('bandNums').innerHTML =
+  (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') +
+  (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '');
+$('bandFn').textContent = C.grounding;
+$('fine').textContent = C.grounding + ' Prepared by Adapty.';
+$('srcBody').innerHTML = C.sources.map(function(g){
+  return '<div><h4>' + g.group + '</h4><dl>' + g.items.map(function(it){ return '<dt>' + it.dt + '</dt><dd>' + it.dd + '</dd>'; }).join('') + '</dl></div>';
+}).join('');
+function openSrc(){ var d = $('srcDetails'); d.open = true; d.scrollIntoView({block: 'start'}); }
+
+/* ---- extras: language control, the paywall side by side, QR / phone view, the video ---- */
+if (LANGS.length > 1) {
+  $('langRow').hidden = false;
+  var lb = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.name + '</button>'; }).join('');
+  $('langSw').innerHTML = lb;
+  $('abLang').innerHTML = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.code.toUpperCase() + '</button>'; }).join('');
+}
+var CM = C.compare;
+if (CM && scr[CM.today] && scr[CM.proposed]) {
+  $('compare').hidden = false; $('navCompare').hidden = false;
+  $('cmpBody').innerHTML = '<div class="au-ideas-h"><p class="au-kicker">' + (CM.kicker || 'The paywall, side by side') + '</p><h2 class="au-h2">' + (CM.title || 'Today and proposed.') + (CM.sub ? ' <span>' + CM.sub + '</span>' : '') + '</h2></div>' +
+    '<div class="au-cmp"><figure><img src="assets/hero/' + CM.today + '.png" alt="Your paywall today"><figcaption>Today <span>· ' + (CM.todayCap || 'rebuilt from your recording') + '</span></figcaption></figure>' +
+    '<ol class="au-chg">' + (CM.rows || []).map(function(r){
+      return '<li><h4>' + r.h + (r.idea ? ' <i>Idea ' + r.idea + '</i>' : '') + '</h4><span class="au-was"><em>Today</em>' + r.was + '</span><span class="au-now"><em>Proposed</em>' + r.now + '</span></li>';
+    }).join('') + '</ol>' +
+    '<figure><button type="button" class="au-cmp-go" data-jumpto="' + CM.proposed + '" aria-label="Open the proposed paywall"><img src="assets/hero/' + CM.proposed + '.png" alt="The proposed paywall"></button><figcaption>Proposed <span>· tap to try it</span></figcaption></figure></div>' +
+    (CM.kept ? '<p class="au-kept">' + CM.kept + '</p>' : '');
+}
+if (C.liveUrl) { $('qrCard').hidden = false; $('qrMob').hidden = false; }
+if (/[?&]app\b/.test(Q)) {
+  var H0 = document.documentElement; H0.classList.add('appmode');
+  var openP = function(o){ H0.classList.toggle('au-open', o); $('abWhy').querySelector('em').textContent = o ? 'Close ↓' : 'Why ↑'; };
+  $('abWhy').onclick = function(){ openP(!H0.classList.contains('au-open')); };
+  $('abScrim').onclick = function(){ openP(false); };
+}
+if (C.video) {
+  var dlg = $('vid'), vel = $('vidEl'); vel.src = C.video; if (C.poster) vel.poster = C.poster; $('vidDl').href = C.video;
+  $('heroVideo').hidden = false;
+  $('heroVideo').onclick = function(){ dlg.showModal(); vel.play().catch(function(){}); };
+  $('vidX').onclick = function(){ dlg.close(); };
+  dlg.addEventListener('close', function(){ vel.pause(); });
+  dlg.addEventListener('click', function(e){ if (e.target === dlg) dlg.close(); });
+}
+
+/* ---- ?tour: a deterministic walkthrough from C.tour — tourAt(ms) paints one frame; record-video.sh records it ---- */
+function tourInit(){
+  var T = C.tour, H = document.documentElement, TR = T.transition || 360;
+  H.classList.add('tourmode', 'shot'); document.body.classList.add('nofx');
+  var SEG = T.segments, START = [], STATE = [], UNDER = [], acc = 0, st = JSON.parse(JSON.stringify(C.state));
+  SEG.forEach(function(s, i){
+    START.push(acc); acc += s.d;
+    Object.keys(s.st || {}).forEach(function(k){ st[k] = s.st[k]; }); STATE.push(JSON.parse(JSON.stringify(st)));
+    var u = null; if (scr[s.id].classList.contains('sheet')) for (var j = i - 1; j >= 0; j--) if (!scr[SEG[j].id].classList.contains('sheet')) { u = SEG[j].id; break; }
+    UNDER.push(u);
+  });
+  var TOTAL = acc, capEl = $('tCap'), tap = $('tTap'), pressed = null, popped = [];
+  $('tIntro').innerHTML = '<p class="au-eyebrow"><i></i>' + document.querySelector('.au-top-hero .au-eyebrow').textContent + '</p><h1 class="au-display">' + C.app + '</h1>' +
+    '<p class="au-lede">' + (T.introLede || document.querySelector('.au-top-hero .au-lede').innerHTML) + '</p>';
+  $('tEnd').innerHTML = '<p class="au-eyebrow"><i></i>Growth Audit · ' + C.app + '</p><h2 class="au-te-h">' + (T.endTitle || 'Five ideas, built into your own onboarding.') + '</h2>' +
+    '<div class="au-te-n">' + (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') + (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '') + '</div>' +
+    (C.liveUrl ? '<div class="au-te-q"><img src="assets/qr-app.png" alt=""><div><b>Try it on your phone</b><span>' + C.liveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '') + '</span></div></div>' : '') +
+    '<p class="au-te-f">' + C.grounding + '</p>';
+  function ease(x){ return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function easeBack(x){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function capHTML(c){
+    c = c || {k: '', t: '', l: ''};
+    return '<div class="au-tk' + (c.n ? '' : ' au-ctx') + '"><i></i>' + (c.n ? 'Idea ' + c.n + ' of ' + IDEAS : (c.k || 'Context')) + '</div><h2 class="au-tt">' + c.t + '</h2><p class="au-tl">' + (c.l || '') + '</p>' +
+      (c.o ? '<div class="au-to"><small>Potential outcome · based on Adapty data</small><b><mark>' + c.o + '</mark></b><span>' + (c.ol || '') + '</span></div>' : '');
+  }
+  function place(id, tf, z){ scr[id].style.transform = tf; scr[id].style.zIndex = z; }
+  window.TOUR_MS = TOTAL;
+  window.tourAt = function(ms){
+    ms = Math.max(0, Math.min(TOTAL - 1, ms));
+    var i = 0; while (i < SEG.length - 1 && ms >= START[i + 1]) i++;
+    var s = SEG[i], local = ms - START[i], prev = i > 0 ? SEG[i - 1] : null;
+    Object.keys(STATE[i]).forEach(function(k){ S[k] = STATE[i][k]; }); sync();
+    var moving = prev && prev.id !== s.id && local < TR, p = moving ? ease(local / TR) : 1;
+    Object.keys(scr).forEach(function(k){ scr[k].classList.remove('is-active', 'is-past', 'under'); place(k, 'translateX(100%)', 0); });
+    var B = scr[s.id];
+    if (moving) {
+      if (B.classList.contains('sheet')) { place(prev.id, 'none', 1); B.style.transform = 'translateY(' + (1 - p) * 100 + '%)'; }
+      else {
+        var slide = 'translateX(' + (-28 * p) + '%)'; place(prev.id, slide, 1); B.style.transform = 'translateX(' + (1 - p) * 100 + '%)';
+        if (UNDER[i - 1]) place(UNDER[i - 1], slide, 0);
+      }
+    } else B.style.transform = 'none';
+    B.style.zIndex = 2;
+    if (UNDER[i] && !moving) place(UNDER[i], 'none', 1);
+    /* optional reveal: s.pop scales an element in, s.reveal fades one in a beat later */
+    popped.forEach(function(e){ e.style.transform = ''; e.style.opacity = ''; }); popped = [];
+    var q = Math.max(0, Math.min(1, (local - 250) / 550));
+    if (s.pop) { var pe = B.querySelector(s.pop); if (pe) { pe.style.transform = 'scale(' + (.55 + .45 * easeBack(q)) + ')'; pe.style.opacity = Math.min(1, q * 1.6); popped.push(pe); } }
+    if (s.reveal) { var re = B.querySelector(s.reveal); if (re) { re.style.opacity = Math.max(0, Math.min(1, (local - 520) / 300)); popped.push(re); } }
+    /* caption crossfades at screen changes; waits for the intro, gives way to the end card */
+    var key = s.id, op = 1;
+    if (moving) { if (p < .5) { key = prev.id; op = 1 - p * 2; } else op = p * 2 - 1; }
+    if (capEl.dataset.k !== key) { capEl.innerHTML = capHTML(T.captions[key]); capEl.dataset.k = key; }
+    var io = ms < 1100 ? 1 : Math.max(0, 1 - (ms - 1100) / 300), eo = s.end ? Math.min(1, local / 350) : 0;
+    capEl.style.opacity = op * Math.max(0, Math.min(1, (ms - 1400) / 300)) * (1 - eo);
+    /* the finger: fades in, taps, ripples out. Selectors are scoped to the screen */
+    tap.style.opacity = 0; if (pressed) { pressed.style.opacity = ''; pressed = null; }
+    if (s.tap) {
+      var el = B.querySelector(s.tap[0]), dt = local - s.tap[1];
+      if (el && dt > -260 && dt < 420) {
+        var r = el.getBoundingClientRect();
+        tap.style.left = (r.left + r.width / 2) + 'px'; tap.style.top = (r.top + r.height / 2) + 'px';
+        if (dt < 0) { tap.style.opacity = (dt + 260) / 260 * .9; tap.style.transform = 'scale(1)'; }
+        else { tap.style.opacity = .9 * (1 - dt / 420); tap.style.transform = 'scale(' + (1 + dt / 420 * .9) + ')'; }
+        if (dt >= 0 && dt < 160) { el.style.opacity = .72; pressed = el; }
+      }
+    }
+    $('tIntro').style.opacity = T.intro === false ? 0 : io;
+    $('tEnd').style.opacity = eo;
+    $('tProg').style.width = (ms / TOTAL * 100) + '%';
+    cur = s.id;
+    return i;
+  };
+  var tm = /[?&]t=(\d+)/.exec(Q); tourAt(tm ? +tm[1] : 0);
+}
+
+/* boot: #<screen-id> deep-links a screen (shoot.sh / hero-stills.sh use it); ?lang=xx picks the language */
+(function(){
+  var lm = /[?&]lang=(\w+)/.exec(Q); if (lm) setLang(lm[1]); else setLang(S.lang);
+  var h = location.hash.slice(1);
+  jump(scr[h] ? h : ORDER[0]);
+  if (scr[h] && !SHOT && !document.documentElement.classList.contains('appmode')) setTimeout(function(){ $('prototype').scrollIntoView(); }, 0);
+  if (/[?&]tour\b/.test(Q) && C.tour) tourInit();
+})();
+</script>
+</body>
+</html>
